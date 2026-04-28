@@ -7,14 +7,78 @@ const badDayToggle = document.querySelector("#badDayToggle");
 const badDayPanel = document.querySelector("#badDayPanel");
 const badDayActions = document.querySelector(".bad-day-actions");
 const safetyButton = document.querySelector("#safetyButton");
+const moodChipsEl = document.querySelector("#moodChips");
+const supportModesEl = document.querySelector("#supportModes");
 const careBubblesEl = document.querySelector("#careBubbles");
 const careNoteEl = document.querySelector("#careNote");
 const dogWisdomEl = document.querySelector("#dogWisdom");
 const dogWisdomButtons = document.querySelectorAll(".composer-buddy");
 
 const STORAGE_KEY = "waliya-cozy-chat";
+const CHECK_IN_STORAGE_KEY = "waliya-check-in";
 const CARE_BUBBLE_INTERVAL_MS = 15000;
 const CARE_BUBBLE_JITTER_MS = 2500;
+const DEFAULT_SUPPORT_MODE = "listen";
+const MOOD_SETTINGS = {
+  soft: {
+    label: "soft",
+    note: "Soft tank is on. Gentle words, low pressure.",
+    placeholder: "Tell me what feels tender right now...",
+    instruction: "Waliya feels tender or emotionally open. Be extra gentle, affirming, and unhurried."
+  },
+  angry: {
+    label: "angry",
+    note: "Angry tank is on. No shame, just room for the heat.",
+    placeholder: "Tell me what made you angry...",
+    instruction: "Waliya feels angry. Validate the feeling without escalating it, and help her feel understood before any advice."
+  },
+  numb: {
+    label: "numb",
+    note: "Numb tank is on. Tiny words count.",
+    placeholder: "Tell me what feels blank or far away...",
+    instruction: "Waliya feels numb or disconnected. Use simple grounding, low-demand questions, and avoid overly intense language."
+  },
+  lonely: {
+    label: "lonely",
+    note: "Lonely tank is on. Stay close and warm.",
+    placeholder: "Tell me where the lonely feeling is sitting...",
+    instruction: "Waliya feels lonely. Offer steady presence and reassurance, and gently encourage connection if useful."
+  },
+  overwhelmed: {
+    label: "overwhelmed",
+    note: "Overwhelmed tank is on. One thing at a time.",
+    placeholder: "Drop the whole mess here...",
+    instruction: "Waliya feels overwhelmed. Reduce the scope, use short replies, and focus on the next tiny manageable thing."
+  },
+  sleepy: {
+    label: "sleepy",
+    note: "Sleepy tank is on. Soft landing mode.",
+    placeholder: "Tell me what your tired brain is carrying...",
+    instruction: "Waliya feels sleepy or depleted. Keep the tone quiet and soothing, with rest-friendly support."
+  }
+};
+const SUPPORT_MODES = {
+  listen: {
+    label: "just listen",
+    note: "Reply style set to just listen.",
+    instruction: "Listen first. Reflect and validate. Do not problem-solve unless Waliya asks."
+  },
+  think: {
+    label: "help me think",
+    note: "Reply style set to help me think.",
+    instruction: "Help Waliya sort the situation with gentle questions and clear, calm thinking."
+  },
+  distract: {
+    label: "distract me",
+    note: "Reply style set to distract me.",
+    instruction: "Offer a soft, easy distraction or playful shift. Keep it light and low effort."
+  },
+  plan: {
+    label: "tiny plan",
+    note: "Reply style set to tiny plan.",
+    instruction: "Give one very small next step, then stop. Avoid a long list."
+  }
+};
 const DOG_WISDOM = [
   "Fezco recommends blanket.",
   "Fezco says this meeting could have been a nap.",
@@ -229,6 +293,9 @@ let careNoteTimer;
 let careBubbleInterval;
 let dogWisdomTimer;
 
+const savedCheckIn = loadCheckInState();
+let currentMood = savedCheckIn.mood;
+let currentSupportMode = savedCheckIn.supportMode;
 let messages = loadMessages();
 
 if (messages.length === 0) {
@@ -240,6 +307,7 @@ if (messages.length === 0) {
   ];
 }
 
+renderCheckInState();
 renderMessages();
 renderCareBubbles();
 startCareBubbleTimer();
@@ -294,6 +362,37 @@ badDayActions.addEventListener("click", async (event) => {
   await sendChatMessage(button.dataset.prompt);
 });
 
+moodChipsEl.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-mood]");
+
+  if (!button) return;
+
+  const nextMood = button.dataset.mood;
+  currentMood = currentMood === nextMood ? "" : nextMood;
+  renderCheckInState();
+  saveCheckInState();
+
+  if (currentMood) {
+    showCareNote(MOOD_SETTINGS[currentMood].note);
+  } else {
+    showCareNote("Tank reset. You can pick a new mood anytime.");
+  }
+
+  input.focus();
+});
+
+supportModesEl.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-support-mode]");
+
+  if (!button) return;
+
+  currentSupportMode = button.dataset.supportMode;
+  renderCheckInState();
+  saveCheckInState();
+  showCareNote(SUPPORT_MODES[currentSupportMode].note);
+  input.focus();
+});
+
 safetyButton.addEventListener("click", () => {
   const safetyMessage =
     "If you might not be safe, please call or text 988 now if you are in the US or Canada. If danger is immediate, call emergency services. If you can, text Maz or someone trusted and move near another person.";
@@ -325,7 +424,8 @@ async function sendChatMessage(text) {
         "content-type": "application/json"
       },
       body: JSON.stringify({
-        messages: getApiMessages(thinking)
+        messages: getApiMessages(thinking),
+        checkIn: getCheckInContext()
       })
     });
 
@@ -384,6 +484,42 @@ function resizeInput() {
 function setLoading(isLoading) {
   sendButton.disabled = isLoading;
   sendButton.textContent = isLoading ? "..." : "Send";
+}
+
+function renderCheckInState() {
+  if (currentMood) {
+    document.body.dataset.mood = currentMood;
+  } else {
+    delete document.body.dataset.mood;
+  }
+
+  moodChipsEl.querySelectorAll("[data-mood]").forEach((button) => {
+    const isActive = button.dataset.mood === currentMood;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  supportModesEl.querySelectorAll("[data-support-mode]").forEach((button) => {
+    const isActive = button.dataset.supportMode === currentSupportMode;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  input.placeholder = currentMood
+    ? MOOD_SETTINGS[currentMood].placeholder
+    : "Tell me what happened today...";
+}
+
+function getCheckInContext() {
+  const mood = MOOD_SETTINGS[currentMood];
+  const supportMode = SUPPORT_MODES[currentSupportMode] || SUPPORT_MODES[DEFAULT_SUPPORT_MODE];
+
+  return {
+    mood: mood ? mood.label : "",
+    moodInstruction: mood ? mood.instruction : "",
+    supportMode: supportMode.label,
+    supportInstruction: supportMode.instruction
+  };
 }
 
 function renderCareBubbles() {
@@ -503,4 +639,26 @@ function loadMessages() {
 
 function saveMessages() {
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-24)));
+}
+
+function loadCheckInState() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(CHECK_IN_STORAGE_KEY) || "{}");
+    const mood = MOOD_SETTINGS[saved.mood] ? saved.mood : "";
+    const supportMode = SUPPORT_MODES[saved.supportMode] ? saved.supportMode : DEFAULT_SUPPORT_MODE;
+
+    return { mood, supportMode };
+  } catch {
+    return { mood: "", supportMode: DEFAULT_SUPPORT_MODE };
+  }
+}
+
+function saveCheckInState() {
+  sessionStorage.setItem(
+    CHECK_IN_STORAGE_KEY,
+    JSON.stringify({
+      mood: currentMood,
+      supportMode: currentSupportMode
+    })
+  );
 }
