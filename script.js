@@ -3,8 +3,33 @@ const input = document.querySelector("#messageInput");
 const messagesEl = document.querySelector("#messages");
 const sendButton = document.querySelector("#sendButton");
 const clearButton = document.querySelector("#clearChat");
+const careBubblesEl = document.querySelector("#careBubbles");
+const careNoteEl = document.querySelector("#careNote");
 
 const STORAGE_KEY = "waliya-cozy-chat";
+const CARE_BUBBLE_INTERVAL_MS = 15000;
+const CARE_BUBBLE_JITTER_MS = 2500;
+const CARE_NOTES = [
+  "You do not have to be bright to be loved.",
+  "I love you on quiet days too.",
+  "You are allowed to rest before everything is fixed.",
+  "Tiny steps count. Even breathing counts.",
+  "I am really glad you exist.",
+  "You do not have to earn gentleness.",
+  "Bad brain weather is still weather. It passes.",
+  "Snoopy and I are on your side.",
+  "You are not a burden to me.",
+  "Come back to one small thing: water, blanket, breath.",
+  "You are beautiful, even when you cannot feel it.",
+  "You are still you on the hard days, and I still choose you.",
+  "No performance needed here. Just be.",
+  "Your softness is not a weakness.",
+  "A hard hour does not get to decide your whole story.",
+  "There is room for you exactly as you are."
+];
+
+let careNoteTimer;
+let careBubbleInterval;
 
 let messages = loadMessages();
 
@@ -18,6 +43,8 @@ if (messages.length === 0) {
 }
 
 renderMessages();
+renderCareBubbles();
+startCareBubbleTimer();
 resizeInput();
 input.focus();
 
@@ -123,6 +150,91 @@ function setLoading(isLoading) {
   sendButton.textContent = isLoading ? "..." : "Send";
 }
 
+function renderCareBubbles() {
+  const notes = shuffle(CARE_NOTES).slice(0, 4);
+  careBubblesEl.innerHTML = "";
+
+  notes.forEach((note, index) => {
+    const button = document.createElement("button");
+    button.className = `care-bubble-button bubble-size-${index + 1}`;
+    button.type = "button";
+    button.dataset.note = note;
+    button.setAttribute("aria-label", "Open a care bubble");
+
+    const label = document.createElement("span");
+    label.className = "visually-hidden";
+    label.textContent = note;
+
+    button.append(label);
+    careBubblesEl.append(button);
+  });
+}
+
+careBubblesEl.addEventListener("click", (event) => {
+  const button = event.target.closest(".care-bubble-button");
+
+  if (!button || button.disabled) return;
+
+  popCareBubble(button);
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    window.clearInterval(careBubbleInterval);
+    return;
+  }
+
+  startCareBubbleTimer();
+});
+
+function popCareBubble(button) {
+  button.disabled = true;
+  button.classList.add("popped");
+  showCareNote(button.dataset.note);
+
+  const remaining = careBubblesEl.querySelectorAll(".care-bubble-button:not(.popped)").length;
+
+  if (remaining === 0) {
+    window.setTimeout(renderCareBubbles, 900);
+  }
+}
+
+function startCareBubbleTimer() {
+  window.clearInterval(careBubbleInterval);
+  careBubbleInterval = window.setInterval(popRandomCareBubble, getCareBubbleDelay());
+}
+
+function popRandomCareBubble() {
+  const available = [...careBubblesEl.querySelectorAll(".care-bubble-button:not(.popped)")];
+
+  if (available.length === 0) {
+    renderCareBubbles();
+    return;
+  }
+
+  const index = Math.floor(Math.random() * available.length);
+  popCareBubble(available[index]);
+  startCareBubbleTimer();
+}
+
+function getCareBubbleDelay() {
+  return CARE_BUBBLE_INTERVAL_MS + Math.floor(Math.random() * CARE_BUBBLE_JITTER_MS);
+}
+
+function showCareNote(note) {
+  window.clearTimeout(careNoteTimer);
+  careNoteEl.textContent = note;
+  careNoteEl.classList.add("visible");
+
+  careNoteTimer = window.setTimeout(() => {
+    careNoteEl.classList.remove("visible");
+  }, 7000);
+}
+
+function shuffle(items) {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
 function getApiMessages(pendingMessage) {
   return messages.filter((message, index) => {
     const isPending = message === pendingMessage;
@@ -135,7 +247,7 @@ function getApiMessages(pendingMessage) {
 
 function loadMessages() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "[]");
     return Array.isArray(saved) ? saved : [];
   } catch {
     return [];
@@ -143,5 +255,5 @@ function loadMessages() {
 }
 
 function saveMessages() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-24)));
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-24)));
 }
