@@ -3,6 +3,10 @@ const input = document.querySelector("#messageInput");
 const messagesEl = document.querySelector("#messages");
 const sendButton = document.querySelector("#sendButton");
 const clearButton = document.querySelector("#clearChat");
+const badDayToggle = document.querySelector("#badDayToggle");
+const badDayPanel = document.querySelector("#badDayPanel");
+const badDayActions = document.querySelector(".bad-day-actions");
+const safetyButton = document.querySelector("#safetyButton");
 const careBubblesEl = document.querySelector("#careBubbles");
 const careNoteEl = document.querySelector("#careNote");
 
@@ -54,6 +58,59 @@ form.addEventListener("submit", async (event) => {
 
   if (!text) return;
 
+  await sendChatMessage(text);
+});
+
+input.addEventListener("input", resizeInput);
+
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    form.requestSubmit();
+  }
+});
+
+clearButton.addEventListener("click", () => {
+  messages = [
+    {
+      role: "assistant",
+      content: "hey Waliya, how was your day?"
+    }
+  ];
+  saveMessages();
+  renderMessages();
+  input.focus();
+});
+
+badDayToggle.addEventListener("click", () => {
+  const shouldOpen = badDayPanel.hidden;
+  badDayPanel.hidden = !shouldOpen;
+  badDayToggle.setAttribute("aria-expanded", String(shouldOpen));
+
+  if (shouldOpen) {
+    showCareNote("Low tide mode is open. No pressure, just one small next thing.");
+  }
+});
+
+badDayActions.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-prompt]");
+
+  if (!button) return;
+
+  await sendChatMessage(button.dataset.prompt);
+});
+
+safetyButton.addEventListener("click", () => {
+  const safetyMessage =
+    "If you might not be safe, please call or text 988 now if you are in the US or Canada. If danger is immediate, call emergency services. If you can, text Maz or someone trusted and move near another person.";
+
+  addMessage("assistant", safetyMessage);
+  showCareNote("One tiny brave thing: get another human near you right now.");
+});
+
+async function sendChatMessage(text) {
+  if (sendButton.disabled) return;
+
   addMessage("user", text);
   input.value = "";
   resizeInput();
@@ -88,28 +145,7 @@ form.addEventListener("submit", async (event) => {
   } finally {
     setLoading(false);
   }
-});
-
-input.addEventListener("input", resizeInput);
-
-input.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    form.requestSubmit();
-  }
-});
-
-clearButton.addEventListener("click", () => {
-  messages = [
-    {
-      role: "assistant",
-      content: "hey Waliya, how was your day?"
-    }
-  ];
-  saveMessages();
-  renderMessages();
-  input.focus();
-});
+}
 
 function addMessage(role, content) {
   const message = { role, content };

@@ -40,8 +40,25 @@
             <h1>hey Waliya</h1>
             <p class="subtitle">what's swimming around today?</p>
           </div>
-          <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
+          <div class="header-actions">
+            <button class="mode-button" id="badDayToggle" type="button" aria-expanded="false" aria-controls="badDayPanel">bad day</button>
+            <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
+          </div>
         </header>
+
+        <section class="bad-day-panel" id="badDayPanel" aria-label="Bad day tools" hidden>
+          <div class="bad-day-copy">
+            <p>low tide mode</p>
+            <span>pick one tiny next thing</span>
+          </div>
+          <div class="bad-day-actions">
+            <button type="button" class="quick-button" data-prompt="just sit with me for a bit">sit with me</button>
+            <button type="button" class="quick-button" data-prompt="distract me with something soft and easy">distract me</button>
+            <button type="button" class="quick-button" data-prompt="say something soft to me">something soft</button>
+            <a class="quick-link" id="textMaz" href="/api/text-maz">text Maz</a>
+            <button type="button" class="quick-button safety-button" id="safetyButton">I might not be safe</button>
+          </div>
+        </section>
 
         <section class="care-reef" aria-label="Care bubbles">
           <div class="care-reef-copy">
