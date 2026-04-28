@@ -9,10 +9,34 @@ const badDayActions = document.querySelector(".bad-day-actions");
 const safetyButton = document.querySelector("#safetyButton");
 const careBubblesEl = document.querySelector("#careBubbles");
 const careNoteEl = document.querySelector("#careNote");
+const dogWisdomEl = document.querySelector("#dogWisdom");
+const dogWisdomButtons = document.querySelectorAll(".composer-buddy");
 
 const STORAGE_KEY = "waliya-cozy-chat";
 const CARE_BUBBLE_INTERVAL_MS = 15000;
 const CARE_BUBBLE_JITTER_MS = 2500;
+const DOG_WISDOM = [
+  "Fezco recommends blanket.",
+  "Fezco says this meeting could have been a nap.",
+  "Fezco has inspected the vibe and requests snacks.",
+  "Fezco says drink water, then look mysterious.",
+  "Fezco says your only job for the next minute is breathing.",
+  "Fezco recommends becoming a cozy loaf.",
+  "Fezco says the tank is secure.",
+  "Fezco says soft blanket protocol is active.",
+  "Fezco thinks you deserve a forehead kiss.",
+  "Fezco has reviewed the evidence and you are very loved.",
+  "Fezco says no big decisions while tired.",
+  "Fezco says snacks are not a personality flaw.",
+  "Fezco recommends one tiny stretch and then more resting.",
+  "Fezco says the vibes are recoverable.",
+  "Fezco says you can text Maz with one word if words are hard.",
+  "Fezco says being small and sleepy is allowed.",
+  "Fezco requests that you unclench your jaw.",
+  "Fezco says paws on deck, you are not alone.",
+  "Fezco says today's forecast: emotionally damp, still lovable.",
+  "Fezco recommends the ancient healing art of getting under a blanket."
+];
 const CARE_NOTES = [
   "You do not have to be bright to be loved.",
   "I love you on quiet days too.",
@@ -203,6 +227,7 @@ const CARE_NOTES = [
 
 let careNoteTimer;
 let careBubbleInterval;
+let dogWisdomTimer;
 
 let messages = loadMessages();
 
@@ -275,6 +300,12 @@ safetyButton.addEventListener("click", () => {
 
   addMessage("assistant", safetyMessage);
   showCareNote("One tiny brave thing: get another human near you right now.");
+});
+
+dogWisdomButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    showDogWisdom();
+  });
 });
 
 async function sendChatMessage(text) {
@@ -434,6 +465,17 @@ function showCareNote(note) {
   careNoteTimer = window.setTimeout(() => {
     careNoteEl.classList.remove("visible");
   }, 7000);
+}
+
+function showDogWisdom() {
+  window.clearTimeout(dogWisdomTimer);
+  dogWisdomEl.textContent = DOG_WISDOM[Math.floor(Math.random() * DOG_WISDOM.length)];
+  dogWisdomEl.classList.add("visible");
+
+  dogWisdomTimer = window.setTimeout(() => {
+    dogWisdomEl.textContent = "tap Fezco for dog wisdom";
+    dogWisdomEl.classList.remove("visible");
+  }, 6500);
 }
 
 function shuffle(items) {

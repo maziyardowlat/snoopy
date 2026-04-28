@@ -405,7 +405,7 @@ h1 {
 .mode-button,
 .quick-button,
 .quick-link,
-.composer button {
+.composer-row button {
   border: 0;
   border-radius: 8px;
   color: #fff;
@@ -429,7 +429,7 @@ h1 {
 .mode-button:hover,
 .quick-button:hover,
 .quick-link:hover,
-.composer button:hover {
+.composer-row button:hover {
   transform: translateY(-1px);
 }
 
@@ -675,10 +675,10 @@ h1 {
 
 .composer {
   display: grid;
-  grid-template-rows: auto minmax(170px, 1fr);
-  gap: 14px;
-  min-height: clamp(260px, 32vh, 430px);
-  padding: 14px;
+  grid-template-rows: auto minmax(112px, 1fr);
+  gap: 10px;
+  min-height: clamp(178px, 19vh, 240px);
+  padding: 12px 14px;
   border-top: 1px solid var(--line);
   background:
     radial-gradient(circle at 18% 88%, rgba(119, 179, 125, 0.18), transparent 24%),
@@ -711,7 +711,7 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(99, 195, 199, 0.24);
 }
 
-.composer button {
+.composer-row button {
   align-self: start;
   height: 52px;
   min-height: 0;
@@ -719,7 +719,7 @@ textarea:focus {
   background: var(--coral);
 }
 
-.composer button:disabled {
+.composer-row button:disabled {
   cursor: wait;
   opacity: 0.7;
   transform: none;
@@ -727,10 +727,11 @@ textarea:focus {
 
 .composer-buddies {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 9px 18px;
   align-items: end;
-  justify-content: space-between;
-  gap: 18px;
   min-height: 0;
   overflow: hidden;
   padding: 6px clamp(8px, 2vw, 18px) 2px;
@@ -753,37 +754,126 @@ textarea:focus {
 .composer-buddy {
   position: relative;
   z-index: 1;
+  align-self: end;
   margin: 0;
-  pointer-events: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transform-origin: center bottom;
+  transition: transform 160ms ease;
+}
+
+.composer-buddy:hover,
+.composer-buddy:focus-visible {
+  outline: none;
+}
+
+.composer-buddy:hover .tap-tag,
+.composer-buddy:focus-visible .tap-tag {
+  transform: translateX(-50%) translateY(-3px);
+}
+
+.composer-buddy:focus-visible img {
+  box-shadow:
+    0 0 0 3px rgba(29, 111, 134, 0.26),
+    0 22px 48px rgba(24, 71, 87, 0.16);
 }
 
 .composer-buddy img {
   display: block;
   width: 100%;
   object-fit: cover;
-  border: 7px solid rgba(255, 253, 248, 0.86);
+  border: 5px solid rgba(255, 253, 248, 0.86);
   border-radius: 8px;
   box-shadow: 0 22px 48px rgba(24, 71, 87, 0.16);
 }
 
-.composer-buddy figcaption {
+.dog-wisdom {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: min(92%, 520px);
+  min-height: 34px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(29, 111, 134, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--water-deep);
+  font-size: 0.84rem;
+  font-weight: 850;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: 0 16px 34px rgba(24, 71, 87, 0.1);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.dog-wisdom.visible {
+  background: #fffdf8;
+  transform: translateY(-2px);
+}
+
+.tap-tag {
   position: absolute;
-  right: 9px;
-  bottom: -9px;
+  left: 50%;
+  top: -25px;
+  z-index: 2;
+  min-width: 64px;
+  padding: 5px 8px;
+  border: 1px solid rgba(29, 111, 134, 0.13);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--water-deep);
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  transition: transform 160ms ease;
+  box-shadow: 0 10px 24px rgba(24, 71, 87, 0.12);
+}
+
+.tap-tag::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 10px;
+  height: 10px;
+  border-right: 1px solid rgba(29, 111, 134, 0.13);
+  border-bottom: 1px solid rgba(29, 111, 134, 0.13);
+  background: rgba(255, 253, 248, 0.92);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.buddy-caption {
+  position: absolute;
+  right: 7px;
+  bottom: -7px;
   min-width: 0;
   margin: 0;
-  padding: 7px 10px;
+  padding: 5px 8px;
   background: rgba(255, 253, 248, 0.94);
   color: var(--water-deep);
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   font-weight: 900;
   text-transform: uppercase;
   box-shadow: 0 10px 24px rgba(24, 71, 87, 0.12);
 }
 
 .buddy-fezco {
-  width: min(38%, 210px);
+  grid-column: 1;
+  grid-row: 2;
+  width: min(30%, 150px);
   transform: rotate(-2deg);
+}
+
+.buddy-fezco:hover,
+.buddy-fezco:focus-visible {
+  transform: translateY(-4px) rotate(-2deg);
 }
 
 .buddy-fezco img {
@@ -791,8 +881,16 @@ textarea:focus {
 }
 
 .buddy-nap {
-  width: min(42%, 240px);
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  width: min(34%, 170px);
   transform: translateY(-12px) rotate(2deg);
+}
+
+.buddy-nap:hover,
+.buddy-nap:focus-visible {
+  transform: translateY(-16px) rotate(2deg);
 }
 
 .buddy-nap img {
@@ -1019,9 +1117,9 @@ textarea:focus {
   }
 
   .composer {
-    grid-template-rows: auto minmax(210px, 1fr);
-    min-height: 420px;
-    gap: 12px;
+    grid-template-rows: auto minmax(146px, 1fr);
+    min-height: 250px;
+    gap: 10px;
   }
 
   .composer-row {
@@ -1031,15 +1129,29 @@ textarea:focus {
 
   .composer-buddies {
     align-items: end;
+    gap: 9px;
     padding-inline: 2px;
   }
 
+  .dog-wisdom {
+    font-size: 0.78rem;
+    min-height: 34px;
+    padding: 8px 10px;
+  }
+
   .buddy-fezco {
-    width: min(43%, 190px);
+    width: min(74%, 150px);
   }
 
   .buddy-nap {
-    width: min(49%, 220px);
+    width: min(80%, 170px);
+  }
+
+  .tap-tag {
+    top: -24px;
+    min-width: 60px;
+    padding: 5px 8px;
+    font-size: 0.6rem;
   }
 }
 
@@ -1049,6 +1161,6 @@ textarea:focus {
   }
 
   .composer {
-    min-height: 470px;
+    min-height: 300px;
   }
 }

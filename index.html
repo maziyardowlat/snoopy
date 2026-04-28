@@ -79,15 +79,18 @@
             <textarea id="messageInput" rows="1" placeholder="Tell me what happened today..." autocomplete="off"></textarea>
             <button id="sendButton" type="submit">Send</button>
           </div>
-          <div class="composer-buddies" aria-hidden="true">
-            <figure class="composer-buddy buddy-fezco">
+          <div class="composer-buddies">
+            <p class="dog-wisdom" id="dogWisdom">tap Fezco for dog wisdom</p>
+            <button class="composer-buddy buddy-fezco" id="fezcoWisdom" type="button" aria-label="Get Fezco wisdom">
+              <span class="tap-tag">tap me</span>
               <img src="/assets/fezco.png" alt="" />
-              <figcaption>Fezco watch</figcaption>
-            </figure>
-            <figure class="composer-buddy buddy-nap">
+              <span class="buddy-caption">Fezco watch</span>
+            </button>
+            <button class="composer-buddy buddy-nap" id="napWisdom" type="button" aria-label="Get nap support wisdom">
+              <span class="tap-tag">tap me</span>
               <img src="/assets/dog-buddy.png" alt="" />
-              <figcaption>nap support</figcaption>
-            </figure>
+              <span class="buddy-caption">nap support</span>
+            </button>
           </div>
         </form>
       </section>
