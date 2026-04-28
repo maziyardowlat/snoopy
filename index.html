@@ -8,37 +8,28 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="side-scene" aria-label="Cozy character scene">
-        <div class="moon"></div>
-        <div class="character-row" aria-hidden="true">
-          <div class="friend friend-snoopy">
-            <div class="friend-head">
-              <span class="ear left"></span>
-              <span class="ear right"></span>
-              <span class="dot eye-one"></span>
-              <span class="dot eye-two"></span>
-              <span class="nose"></span>
-            </div>
-            <p>Snoopy</p>
-          </div>
-          <div class="friend friend-moomin">
-            <div class="friend-head">
-              <span class="dot eye-one"></span>
-              <span class="dot eye-two"></span>
-              <span class="snout"></span>
-            </div>
-            <p>Moomin</p>
-          </div>
+      <section class="side-scene" aria-label="Snoopy and Moomin scene">
+        <div class="scene-sky"></div>
+        <div class="scene-sun"></div>
+        <div class="scene-ground"></div>
+        <div class="character-stack">
+          <figure class="character-card snoopy-card" data-label="Snoopy">
+            <img src="/assets/Snoopy_Peanuts.png" alt="Snoopy" onerror="this.closest('.character-card').classList.add('missing')" />
+            <figcaption>Snoopy</figcaption>
+          </figure>
+          <figure class="character-card moomin-card" data-label="Moomin">
+            <img src="/assets/764378_poster.jpg" alt="Moomin" onerror="this.closest('.character-card').classList.add('missing')" />
+            <figcaption>Moomin</figcaption>
+          </figure>
         </div>
-        <div class="hill hill-one"></div>
-        <div class="hill hill-two"></div>
       </section>
 
       <section class="chat-panel" aria-label="Chat with Waliya">
         <header class="chat-header">
           <div>
             <p class="eyebrow">Waliya's little corner</p>
-            <h1>hey waliya, how was your day?</h1>
+            <h1>hey Waliya</h1>
+            <p class="subtitle">how was your day?</p>
           </div>
           <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
         </header>

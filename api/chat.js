@@ -1,5 +1,6 @@
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
+const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
 
 module.exports = async function handler(request, response) {
   if (request.method !== "POST") {
@@ -31,7 +32,7 @@ module.exports = async function handler(request, response) {
         "anthropic-version": ANTHROPIC_VERSION
       },
       body: JSON.stringify({
-        model: process.env.ANTHROPIC_MODEL || "claude-3-5-haiku-latest",
+        model: getModelName(process.env.ANTHROPIC_MODEL),
         max_tokens: 700,
         temperature: 0.8,
         system:
@@ -44,7 +45,7 @@ module.exports = async function handler(request, response) {
 
     if (!anthropicResponse.ok) {
       const detail = data.error && data.error.message ? data.error.message : "Anthropic request failed.";
-      return response.status(502).json({ error: detail });
+      return response.status(502).json({ error: humanizeAnthropicError(detail) });
     }
 
     return response.status(200).json({ reply: extractText(data) });
@@ -91,6 +92,28 @@ function normalizeMessages(messages) {
       role: message.role,
       content: message.content.slice(0, 4000)
     }));
+}
+
+function getModelName(model) {
+  const requested = typeof model === "string" ? model.trim() : "";
+
+  if (
+    !requested ||
+    requested === "claude-3-5-haiku-latest" ||
+    requested === "claude-3-5-haiku-20241022"
+  ) {
+    return DEFAULT_MODEL;
+  }
+
+  return requested;
+}
+
+function humanizeAnthropicError(message) {
+  if (message && message.startsWith("model:")) {
+    return "The selected Claude model is not available for this key. I switched the app default to a stable Haiku model; restart the dev server and try again.";
+  }
+
+  return message || "Anthropic request failed.";
 }
 
 function extractText(data) {

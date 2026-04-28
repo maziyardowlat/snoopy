@@ -2,6 +2,15 @@
 
 A tiny Vercel chat page with a warm Anthropic-powered companion.
 
+## Character images
+
+Add your own allowed image files here:
+
+- `assets/Snoopy_Peanuts.png`
+- `assets/764378_poster.jpg`
+
+Transparent PNGs look best.
+
 ## Local setup
 
 1. Copy `.env.example` to `.env`.
@@ -26,4 +35,4 @@ Then open the local URL Vercel prints.
 3. Add `ANTHROPIC_API_KEY` in the Vercel project environment variables.
 4. Deploy.
 
-Optional: set `ANTHROPIC_MODEL` if you want to use a different Claude model. The default is `claude-3-5-haiku-latest`.
+Optional: set `ANTHROPIC_MODEL` if you want to use a different Claude model. The default is `claude-haiku-4-5-20251001`.
