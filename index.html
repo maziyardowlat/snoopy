@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Waliya Chat</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="side-scene" aria-label="Cozy character scene">
+        <div class="moon"></div>
+        <div class="character-row" aria-hidden="true">
+          <div class="friend friend-snoopy">
+            <div class="friend-head">
+              <span class="ear left"></span>
+              <span class="ear right"></span>
+              <span class="dot eye-one"></span>
+              <span class="dot eye-two"></span>
+              <span class="nose"></span>
+            </div>
+            <p>Snoopy</p>
+          </div>
+          <div class="friend friend-moomin">
+            <div class="friend-head">
+              <span class="dot eye-one"></span>
+              <span class="dot eye-two"></span>
+              <span class="snout"></span>
+            </div>
+            <p>Moomin</p>
+          </div>
+        </div>
+        <div class="hill hill-one"></div>
+        <div class="hill hill-two"></div>
+      </section>
+
+      <section class="chat-panel" aria-label="Chat with Waliya">
+        <header class="chat-header">
+          <div>
+            <p class="eyebrow">Waliya's little corner</p>
+            <h1>hey waliya, how was your day?</h1>
+          </div>
+          <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
+        </header>
+
+        <div class="messages" id="messages" aria-live="polite"></div>
+
+        <form class="composer" id="chatForm">
+          <label class="visually-hidden" for="messageInput">Message</label>
+          <textarea id="messageInput" rows="1" placeholder="Tell me what happened today..." autocomplete="off"></textarea>
+          <button id="sendButton" type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="/script.js" defer></script>
+  </body>
+</html>
