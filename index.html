@@ -69,12 +69,26 @@
           <p class="care-note" id="careNote" role="status" aria-live="polite"></p>
         </section>
 
-        <div class="messages" id="messages" aria-live="polite"></div>
+        <section class="chat-body" aria-label="Chat messages">
+          <div class="messages" id="messages" aria-live="polite"></div>
+        </section>
 
         <form class="composer" id="chatForm">
-          <label class="visually-hidden" for="messageInput">Message</label>
-          <textarea id="messageInput" rows="1" placeholder="Tell me what happened today..." autocomplete="off"></textarea>
-          <button id="sendButton" type="submit">Send</button>
+          <div class="composer-row">
+            <label class="visually-hidden" for="messageInput">Message</label>
+            <textarea id="messageInput" rows="1" placeholder="Tell me what happened today..." autocomplete="off"></textarea>
+            <button id="sendButton" type="submit">Send</button>
+          </div>
+          <div class="composer-buddies" aria-hidden="true">
+            <figure class="composer-buddy buddy-fezco">
+              <img src="/assets/fezco.png" alt="" />
+              <figcaption>Fezco watch</figcaption>
+            </figure>
+            <figure class="composer-buddy buddy-nap">
+              <img src="/assets/dog-buddy.png" alt="" />
+              <figcaption>nap support</figcaption>
+            </figure>
+          </div>
         </form>
       </section>
     </main>
