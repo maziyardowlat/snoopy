@@ -8,18 +8,27 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="side-scene" aria-label="Snoopy and Moomin scene">
-        <div class="scene-sky"></div>
-        <div class="scene-sun"></div>
-        <div class="scene-ground"></div>
-        <div class="character-stack">
-          <figure class="character-card snoopy-card" data-label="Snoopy">
-            <img src="/assets/Snoopy_Peanuts.png" alt="Snoopy" onerror="this.closest('.character-card').classList.add('missing')" />
-            <figcaption>Snoopy</figcaption>
-          </figure>
-          <figure class="character-card moomin-card" data-label="Moomin">
-            <img src="/assets/764378_poster.jpg" alt="Moomin" onerror="this.closest('.character-card').classList.add('missing')" />
-            <figcaption>Moomin</figcaption>
+      <section class="side-scene" aria-label="Aquarium scene with Snoopy">
+        <div class="water-light"></div>
+        <div class="air-bubble air-bubble-one"></div>
+        <div class="air-bubble air-bubble-two"></div>
+        <div class="air-bubble air-bubble-three"></div>
+        <div class="air-bubble air-bubble-four"></div>
+        <div class="fish fish-one" aria-hidden="true"></div>
+        <div class="fish fish-two" aria-hidden="true"></div>
+        <div class="fish fish-three" aria-hidden="true"></div>
+        <div class="reef" aria-hidden="true">
+          <span class="plant plant-one"></span>
+          <span class="plant plant-two"></span>
+          <span class="plant plant-three"></span>
+          <span class="coral coral-one"></span>
+          <span class="coral coral-two"></span>
+        </div>
+        <div class="sand"></div>
+        <div class="snoopy-perch">
+          <figure class="snoopy-card" data-label="Snoopy">
+            <img src="/assets/Snoopy_Peanuts.png" alt="Snoopy" onerror="this.closest('.snoopy-card').classList.add('missing')" />
+            <figcaption>tank buddy</figcaption>
           </figure>
         </div>
       </section>
@@ -29,7 +38,7 @@
           <div>
             <p class="eyebrow">Waliya's little corner</p>
             <h1>hey Waliya</h1>
-            <p class="subtitle">how was your day?</p>
+            <p class="subtitle">what's swimming around today?</p>
           </div>
           <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
         </header>
