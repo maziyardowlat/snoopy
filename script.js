@@ -9,50 +9,50 @@ const badDayActions = document.querySelector(".bad-day-actions");
 const safetyButton = document.querySelector("#safetyButton");
 const moodChipsEl = document.querySelector("#moodChips");
 const supportModesEl = document.querySelector("#supportModes");
-const careBubblesEl = document.querySelector("#careBubbles");
+const careLightsEl = document.querySelector("#careLights");
 const careNoteEl = document.querySelector("#careNote");
 const dogWisdomEl = document.querySelector("#dogWisdom");
 const dogWisdomButtons = document.querySelectorAll(".composer-buddy");
 
 const STORAGE_KEY = "waliya-cozy-chat";
 const CHECK_IN_STORAGE_KEY = "waliya-check-in";
-const CARE_BUBBLE_INTERVAL_MS = 15000;
-const CARE_BUBBLE_JITTER_MS = 2500;
+const CARE_LIGHT_INTERVAL_MS = 15000;
+const CARE_LIGHT_JITTER_MS = 2500;
 const DEFAULT_SUPPORT_MODE = "listen";
 const MOOD_SETTINGS = {
   soft: {
     label: "soft",
-    note: "Soft tank is on. Gentle words, low pressure.",
+    note: "Soft home mode is on. Gentle words, low pressure.",
     placeholder: "Tell me what feels tender right now...",
     instruction: "Waliya feels tender or emotionally open. Be extra gentle, affirming, and unhurried."
   },
   angry: {
     label: "angry",
-    note: "Angry tank is on. No shame, just room for the heat.",
+    note: "Angry room mode is on. No shame, just room for the heat.",
     placeholder: "Tell me what made you angry...",
     instruction: "Waliya feels angry. Validate the feeling without escalating it, and help her feel understood before any advice."
   },
   numb: {
     label: "numb",
-    note: "Numb tank is on. Tiny words count.",
+    note: "Numb room mode is on. Tiny words count.",
     placeholder: "Tell me what feels blank or far away...",
     instruction: "Waliya feels numb or disconnected. Use simple grounding, low-demand questions, and avoid overly intense language."
   },
   lonely: {
     label: "lonely",
-    note: "Lonely tank is on. Stay close and warm.",
+    note: "Lonely home mode is on. Stay close and warm.",
     placeholder: "Tell me where the lonely feeling is sitting...",
     instruction: "Waliya feels lonely. Offer steady presence and reassurance, and gently encourage connection if useful."
   },
   overwhelmed: {
     label: "overwhelmed",
-    note: "Overwhelmed tank is on. One thing at a time.",
+    note: "Overwhelmed room mode is on. One thing at a time.",
     placeholder: "Drop the whole mess here...",
     instruction: "Waliya feels overwhelmed. Reduce the scope, use short replies, and focus on the next tiny manageable thing."
   },
   sleepy: {
     label: "sleepy",
-    note: "Sleepy tank is on. Soft landing mode.",
+    note: "Sleepy home mode is on. Soft landing mode.",
     placeholder: "Tell me what your tired brain is carrying...",
     instruction: "Waliya feels sleepy or depleted. Keep the tone quiet and soothing, with rest-friendly support."
   }
@@ -86,7 +86,7 @@ const DOG_WISDOM = [
   "Fezco says drink water, then look mysterious.",
   "Fezco says your only job for the next minute is breathing.",
   "Fezco recommends becoming a cozy loaf.",
-  "Fezco says the tank is secure.",
+  "Fezco says the house is secure.",
   "Fezco says soft blanket protocol is active.",
   "Fezco thinks you deserve a forehead kiss.",
   "Fezco has reviewed the evidence and you are very loved.",
@@ -143,14 +143,14 @@ const CARE_NOTES = [
   "Even your quiet presence matters.",
   "You are worth patience.",
   "It is okay if all you did today was survive.",
-  "The ocean does not apologize for having waves.",
-  "You can float for a while. You do not have to swim.",
+  "A home can be quiet and still be full of life.",
+  "You can settle for a while. You do not have to perform.",
   "Your feelings are real, and they are not forever.",
   "I am glad the world has you in it.",
   "You do not have to be easy to be loved.",
   "Rest is not giving up.",
   "You are allowed to need reassurance.",
-  "You are not alone in the deep water.",
+  "You are not alone in the quiet room.",
   "Let the next breath be enough for now.",
   "You are beautiful in ways sadness cannot erase.",
   "You do not need to punish yourself for hurting.",
@@ -166,8 +166,8 @@ const CARE_NOTES = [
   "Some days are just for getting through.",
   "You belong in every room where you are loved.",
   "You do not have to carry the whole day at once.",
-  "Snoopy is monitoring the tank and says you are doing enough.",
-  "The fish have unanimously voted that you deserve rest.",
+  "Snoopy is monitoring the little home and says you are doing enough.",
+  "The porch light is on because you deserve rest.",
   "You are my favorite person to check on.",
   "If your heart feels heavy, let me hold a corner of it.",
   "Nothing tender about you is wasted.",
@@ -176,7 +176,7 @@ const CARE_NOTES = [
   "You do not have to make pain make sense right now.",
   "I love the you who is trying, resting, crying, laughing, all of it.",
   "You are allowed to begin again as many times as you need.",
-  "The tank is calm. You can borrow some calm from it.",
+  "The room is calm. You can borrow some calm from it.",
   "You are enough before you answer anyone.",
   "You are enough before you fix anything.",
   "You are enough before you feel better.",
@@ -199,7 +199,7 @@ const CARE_NOTES = [
   "You are not a burden for having needs.",
   "Your sadness does not make you unlovable.",
   "You do not have to be impressive to be precious.",
-  "Let the water hold what you cannot hold right now.",
+  "Let the room hold what you cannot hold right now.",
   "One gentle choice is still a choice.",
   "You do not need to outrun the feeling.",
   "You can sit beside the feeling and let it pass.",
@@ -245,13 +245,13 @@ const CARE_NOTES = [
   "There are still warm drinks waiting for you.",
   "There are still soft mornings ahead.",
   "There are still silly little moments coming.",
-  "There are still fish in the tank doing fish business.",
+  "There are still soft mornings in this new home.",
   "Snoopy says naps are a valid strategy.",
   "Snoopy says no heroic speeches required.",
   "Snoopy says you are doing the brave quiet thing.",
-  "The tank report says: rest recommended.",
-  "The fish are giving you a tiny standing ovation.",
-  "A bubble popped just to remind you: stay.",
+  "The home report says: rest recommended.",
+  "The little lights are giving you a tiny standing ovation.",
+  "A light turned on just to remind you: stay.",
   "You can come back to this note as many times as you need.",
   "I am glad you opened this.",
   "I am glad you are still here.",
@@ -284,13 +284,13 @@ const CARE_NOTES = [
   "There is no shame in needing someone beside you.",
   "Please let someone love you through the next few minutes.",
   "The next few minutes are worth protecting.",
-  "This feeling is a wave. You are not the wave.",
-  "Float. Breathe. Reach. That is enough for now.",
+  "This feeling is a storm. You are not the storm.",
+  "Settle. Breathe. Reach. That is enough for now.",
   "You are allowed to stay."
 ];
 
 let careNoteTimer;
-let careBubbleInterval;
+let careLightInterval;
 let dogWisdomTimer;
 
 const savedCheckIn = loadCheckInState();
@@ -309,8 +309,8 @@ if (messages.length === 0) {
 
 renderCheckInState();
 renderMessages();
-renderCareBubbles();
-startCareBubbleTimer();
+renderCareLights();
+startCareLightTimer();
 resizeInput();
 input.focus();
 
@@ -350,7 +350,7 @@ badDayToggle.addEventListener("click", () => {
   badDayToggle.setAttribute("aria-expanded", String(shouldOpen));
 
   if (shouldOpen) {
-    showCareNote("Low tide mode is open. No pressure, just one small next thing.");
+    showCareNote("Porch light mode is open. No pressure, just one small next thing.");
   }
 });
 
@@ -375,7 +375,7 @@ moodChipsEl.addEventListener("click", (event) => {
   if (currentMood) {
     showCareNote(MOOD_SETTINGS[currentMood].note);
   } else {
-    showCareNote("Tank reset. You can pick a new mood anytime.");
+    showCareNote("Home mode reset. You can pick a new mood anytime.");
   }
 
   input.focus();
@@ -522,75 +522,75 @@ function getCheckInContext() {
   };
 }
 
-function renderCareBubbles() {
+function renderCareLights() {
   const notes = shuffle(CARE_NOTES).slice(0, 4);
-  careBubblesEl.innerHTML = "";
+  careLightsEl.innerHTML = "";
 
   notes.forEach((note, index) => {
     const button = document.createElement("button");
-    button.className = `care-bubble-button bubble-size-${index + 1}`;
+    button.className = `care-light-button light-size-${index + 1}`;
     button.type = "button";
     button.dataset.note = note;
-    button.setAttribute("aria-label", "Open a care bubble");
+    button.setAttribute("aria-label", "Turn on a care light");
 
     const label = document.createElement("span");
     label.className = "visually-hidden";
     label.textContent = note;
 
     button.append(label);
-    careBubblesEl.append(button);
+    careLightsEl.append(button);
   });
 }
 
-careBubblesEl.addEventListener("click", (event) => {
-  const button = event.target.closest(".care-bubble-button");
+careLightsEl.addEventListener("click", (event) => {
+  const button = event.target.closest(".care-light-button");
 
   if (!button || button.disabled) return;
 
-  popCareBubble(button);
+  turnOnCareLight(button);
 });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    window.clearInterval(careBubbleInterval);
+    window.clearInterval(careLightInterval);
     return;
   }
 
-  startCareBubbleTimer();
+  startCareLightTimer();
 });
 
-function popCareBubble(button) {
+function turnOnCareLight(button) {
   button.disabled = true;
-  button.classList.add("popped");
+  button.classList.add("lit");
   showCareNote(button.dataset.note);
 
-  const remaining = careBubblesEl.querySelectorAll(".care-bubble-button:not(.popped)").length;
+  const remaining = careLightsEl.querySelectorAll(".care-light-button:not(.lit)").length;
 
   if (remaining === 0) {
-    window.setTimeout(renderCareBubbles, 900);
+    window.setTimeout(renderCareLights, 900);
   }
 }
 
-function startCareBubbleTimer() {
-  window.clearInterval(careBubbleInterval);
-  careBubbleInterval = window.setInterval(popRandomCareBubble, getCareBubbleDelay());
+function startCareLightTimer() {
+  window.clearInterval(careLightInterval);
+  careLightInterval = window.setInterval(turnOnRandomCareLight, getCareLightDelay());
 }
 
-function popRandomCareBubble() {
-  const available = [...careBubblesEl.querySelectorAll(".care-bubble-button:not(.popped)")];
+function turnOnRandomCareLight() {
+  const available = [...careLightsEl.querySelectorAll(".care-light-button:not(.lit)")];
 
   if (available.length === 0) {
-    renderCareBubbles();
+    renderCareLights();
     return;
   }
 
   const index = Math.floor(Math.random() * available.length);
-  popCareBubble(available[index]);
-  startCareBubbleTimer();
+  turnOnCareLight(available[index]);
+  startCareLightTimer();
 }
 
-function getCareBubbleDelay() {
-  return CARE_BUBBLE_INTERVAL_MS + Math.floor(Math.random() * CARE_BUBBLE_JITTER_MS);
+function getCareLightDelay() {
+  return CARE_LIGHT_INTERVAL_MS + Math.floor(Math.random() * CARE_LIGHT_JITTER_MS);
 }
 
 function showCareNote(note) {
@@ -609,7 +609,7 @@ function showDogWisdom() {
   dogWisdomEl.classList.add("visible");
 
   dogWisdomTimer = window.setTimeout(() => {
-    dogWisdomEl.textContent = "tap Fezco for dog wisdom";
+    dogWisdomEl.textContent = "tap Fezco for home wisdom";
     dogWisdomEl.classList.remove("visible");
   }, 6500);
 }
