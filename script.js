@@ -80,6 +80,10 @@ const SUPPORT_MODES = {
   }
 };
 const DOG_WISDOM = [
+  "Chef Fezco says the whole tub was the correct amount.",
+  "Chef Fezco says cocoa dust is a legitimate coping strategy.",
+  "Chef Fezco has tasted the vibes. They need more mascarpone.",
+  "Chef Fezco says tiramisu means pick-me-up, so this is basically medicine.",
   "Fezco recommends blanket.",
   "Fezco says this meeting could have been a nap.",
   "Fezco has inspected the vibe and requests snacks.",
@@ -609,7 +613,7 @@ function showDogWisdom() {
   dogWisdomEl.classList.add("visible");
 
   dogWisdomTimer = window.setTimeout(() => {
-    dogWisdomEl.textContent = "tap Fezco for home wisdom";
+    dogWisdomEl.textContent = "tap a sous-chef for kitchen wisdom";
     dogWisdomEl.classList.remove("visible");
   }, 6500);
 }

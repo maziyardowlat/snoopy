@@ -2,10 +2,10 @@
   --ink: #262321;
   --muted: #716a60;
   --panel: #fffaf2;
-  --line: #eadfd0;
-  --home-deep: #4f6657;
-  --home: #8cb4a3;
-  --home-soft: #edf6ef;
+  --line: #e7d7c3;
+  --home-deep: #53644b;
+  --home: #87977a;
+  --home-soft: #f0f3e9;
   --room-top: #f5cfae;
   --room-mid: #e7a98a;
   --room-bottom: #725d63;
@@ -34,9 +34,9 @@ body {
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background:
-    radial-gradient(circle at 18% 14%, rgba(111, 153, 106, 0.2), transparent 28%),
-    radial-gradient(circle at 78% 20%, rgba(245, 201, 93, 0.22), transparent 30%),
-    linear-gradient(135deg, #e7f2ef 0%, #fff6e4 48%, #f4d2c3 100%);
+    radial-gradient(circle at 18% 14%, rgba(83, 100, 75, 0.18), transparent 28%),
+    radial-gradient(circle at 78% 20%, rgba(189, 128, 75, 0.18), transparent 30%),
+    linear-gradient(135deg, #e8eadf 0%, #fff5df 48%, #d9b48f 100%);
 }
 
 body[data-mood="soft"] {
@@ -132,6 +132,139 @@ button {
   background-size: 54px 100%, auto, auto, auto;
   opacity: 0.9;
 }
+
+.chef-scene {
+  min-height: calc(100vh - clamp(32px, 6vw, 84px));
+  background: #6a4a32;
+}
+
+.chef-scene::before {
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(38, 24, 16, 0.05) 35%, rgba(38, 24, 16, 0.7) 100%),
+    radial-gradient(circle at 50% 36%, transparent 38%, rgba(35, 21, 13, 0.2) 100%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.kitchen-copy {
+  position: absolute;
+  top: clamp(20px, 4vw, 38px);
+  left: clamp(18px, 4vw, 34px);
+  right: clamp(18px, 4vw, 34px);
+  z-index: 5;
+  color: #fffaf2;
+  filter: drop-shadow(0 3px 12px rgba(45, 28, 18, 0.48));
+}
+
+.kitchen-copy p,
+.kitchen-copy h2,
+.kitchen-copy span {
+  margin: 0;
+}
+
+.kitchen-copy p {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kitchen-copy h2 {
+  margin-top: 3px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 5vw, 4.7rem);
+  font-style: italic;
+  line-height: 0.9;
+}
+
+.kitchen-copy span {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 250, 242, 0.42);
+  border-radius: 999px;
+  background: rgba(66, 42, 27, 0.5);
+  font-size: 0.8rem;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
+.chef-snoopy {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  animation: chef-bob 4.8s ease-in-out infinite;
+}
+
+.chef-snoopy img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.015);
+}
+
+.chef-snoopy figcaption {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 4;
+  border-color: rgba(255, 250, 242, 0.34);
+  background: rgba(66, 42, 27, 0.7);
+  color: #fffaf2;
+}
+
+.steam {
+  position: absolute;
+  right: 27%;
+  bottom: 27%;
+  z-index: 4;
+  width: 18px;
+  height: 72px;
+  border-left: 3px solid rgba(255, 250, 242, 0.58);
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0;
+  pointer-events: none;
+  animation: kitchen-steam 3.2s ease-out infinite;
+}
+
+.steam-two {
+  right: 32%;
+  animation-delay: -1.55s;
+}
+
+.cocoa-dust {
+  position: absolute;
+  top: 48%;
+  left: 62%;
+  z-index: 4;
+  width: 90px;
+  height: 120px;
+  pointer-events: none;
+}
+
+.cocoa-dust i {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #5c321d;
+  opacity: 0;
+  animation: cocoa-fall 2.4s ease-in infinite;
+}
+
+.cocoa-dust i:nth-child(2) { left: 33%; animation-delay: -0.3s; }
+.cocoa-dust i:nth-child(3) { left: 68%; animation-delay: -0.65s; }
+.cocoa-dust i:nth-child(4) { left: 44%; animation-delay: -0.9s; }
+.cocoa-dust i:nth-child(5) { left: 78%; animation-delay: -1.2s; }
+.cocoa-dust i:nth-child(6) { left: 22%; animation-delay: -1.45s; }
+.cocoa-dust i:nth-child(7) { left: 57%; animation-delay: -1.75s; }
+.cocoa-dust i:nth-child(8) { left: 86%; animation-delay: -2.05s; }
 
 .window-glow {
   position: absolute;
@@ -1113,6 +1246,45 @@ textarea:focus {
   }
 }
 
+@keyframes chef-bob {
+  0%,
+  100% {
+    transform: scale(1.01) translateY(0);
+  }
+  50% {
+    transform: scale(1.018) translateY(-4px);
+  }
+}
+
+@keyframes cocoa-fall {
+  0%,
+  18% {
+    opacity: 0;
+    transform: translate3d(-8px, -8px, 0) scale(0.6);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(16px, 110px, 0) scale(1.15);
+  }
+}
+
+@keyframes kitchen-steam {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.75) rotate(8deg);
+  }
+  28% {
+    opacity: 0.62;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-13px, -48px, 0) scale(1.25) rotate(-12deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1137,6 +1309,19 @@ textarea:focus {
 
   .side-scene {
     height: 260px;
+  }
+
+  .chef-scene {
+    height: min(72vh, 560px);
+    min-height: 420px;
+  }
+
+  .chef-snoopy img {
+    object-position: center 48%;
+  }
+
+  .kitchen-copy h2 {
+    font-size: clamp(2.25rem, 11vw, 4rem);
   }
 
   .window-glow {

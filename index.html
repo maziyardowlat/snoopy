@@ -3,46 +3,34 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Waliya Chat</title>
+    <title>Waliya's Tiramisu Kitchen</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="app-shell">
-      <section class="side-scene" aria-label="Cozy basement suite with Snoopy">
-        <div class="window-glow" aria-hidden="true"></div>
-        <div class="string-light string-light-one" aria-hidden="true"></div>
-        <div class="string-light string-light-two" aria-hidden="true"></div>
-        <div class="string-light string-light-three" aria-hidden="true"></div>
-        <div class="string-light string-light-four" aria-hidden="true"></div>
-        <div class="wall-shelf" aria-hidden="true">
-          <span class="book book-one"></span>
-          <span class="book book-two"></span>
-          <span class="book book-three"></span>
-          <span class="keepsake"></span>
+      <section class="side-scene chef-scene" aria-label="Snoopy making tiramisu in a cozy kitchen">
+        <div class="kitchen-copy">
+          <p>chef Snoopy's special</p>
+          <h2>tiramisu night</h2>
+          <span>yes, the whole tub ♡</span>
         </div>
-        <div class="room-plant" aria-hidden="true">
-          <span class="leaf leaf-one"></span>
-          <span class="leaf leaf-two"></span>
-          <span class="leaf leaf-three"></span>
-          <span class="leaf leaf-four"></span>
-          <span class="planter"></span>
+        <div class="steam steam-one" aria-hidden="true"></div>
+        <div class="steam steam-two" aria-hidden="true"></div>
+        <div class="cocoa-dust" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         </div>
-        <div class="floor"></div>
-        <div class="rug"></div>
-        <div class="snoopy-perch">
-          <figure class="snoopy-card" data-label="Snoopy">
-            <img src="/assets/Snoopy_Peanuts.png" alt="Snoopy" onerror="this.closest('.snoopy-card').classList.add('missing')" />
-            <figcaption>home buddy</figcaption>
-          </figure>
-        </div>
+        <figure class="chef-snoopy">
+          <img src="/assets/chef-snoopy-tiramisu.png" alt="Snoopy in a chef hat dusting cocoa over a homemade tiramisu" />
+          <figcaption>currently dusting cocoa...</figcaption>
+        </figure>
       </section>
 
       <section class="chat-panel" aria-label="Chat with Waliya">
         <header class="chat-header">
           <div>
-            <p class="eyebrow">Waliya's little corner</p>
-            <h1>hey Waliya</h1>
-            <p class="subtitle">how does home feel today?</p>
+            <p class="eyebrow">Waliya's tiny kitchen</p>
+            <h1>hey, chef</h1>
+            <p class="subtitle">what are we whipping up today?</p>
           </div>
           <div class="header-actions">
             <button class="mode-button" id="badDayToggle" type="button" aria-expanded="false" aria-controls="badDayPanel">bad day</button>
@@ -52,8 +40,8 @@
 
         <section class="bad-day-panel" id="badDayPanel" aria-label="Bad day tools" hidden>
           <div class="bad-day-copy">
-            <p>porch light mode</p>
-            <span>pick one tiny next thing</span>
+            <p>kitchen rescue mode</p>
+            <span>one tiny comfort, chef's choice</span>
           </div>
           <div class="bad-day-actions">
             <button type="button" class="quick-button" data-prompt="just sit with me for a bit">sit with me</button>
@@ -67,7 +55,7 @@
         <section class="check-in-panel" aria-label="Mood check-in and reply style">
           <div class="check-in-group">
             <div class="check-in-copy">
-              <p>mood check</p>
+              <p>today's flavor</p>
               <span>tap what fits</span>
             </div>
             <div class="mood-chips" id="moodChips">
@@ -82,7 +70,7 @@
 
           <div class="check-in-group">
             <div class="check-in-copy">
-              <p>reply style</p>
+              <p>chef's orders</p>
               <span>choose before sending</span>
             </div>
             <div class="support-modes" id="supportModes" aria-label="Choose reply style">
@@ -96,8 +84,8 @@
 
         <section class="care-nook" aria-label="Care lights">
           <div class="care-nook-copy">
-            <p>tap a light</p>
-            <span>small notes around the room</span>
+            <p>cocoa notes</p>
+            <span>tap for something sweet</span>
           </div>
           <div class="care-lights" id="careLights"></div>
           <p class="care-note" id="careNote" role="status" aria-live="polite"></p>
@@ -114,16 +102,16 @@
             <button id="sendButton" type="submit">Send</button>
           </div>
           <div class="composer-buddies">
-            <p class="dog-wisdom" id="dogWisdom">tap Fezco for home wisdom</p>
+            <p class="dog-wisdom" id="dogWisdom">tap a sous-chef for kitchen wisdom</p>
             <button class="composer-buddy buddy-fezco" id="fezcoWisdom" type="button" aria-label="Get Fezco wisdom">
               <span class="tap-tag">tap me</span>
               <img src="/assets/fezco.png" alt="" />
-              <span class="buddy-caption">Fezco guard</span>
+              <span class="buddy-caption">Fezco sous-chef</span>
             </button>
             <button class="composer-buddy buddy-nap" id="napWisdom" type="button" aria-label="Get nap support wisdom">
               <span class="tap-tag">tap me</span>
               <img src="/assets/dog-buddy.png" alt="" />
-              <span class="buddy-caption">nap nook</span>
+              <span class="buddy-caption">nap inspector</span>
             </button>
           </div>
         </form>
