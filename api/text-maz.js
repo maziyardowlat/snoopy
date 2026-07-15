@@ -10,11 +10,22 @@ module.exports = async function handler(request, response) {
     return response.status(500).send("Missing MAZI_PHONE_NUMBER.");
   }
 
-  const body = encodeURIComponent("Can you sit with me for a bit?");
+  const requestedBody = getRequestedBody(request.query && request.query.body);
+  const body = encodeURIComponent(requestedBody || "Can you sit with me for a bit?");
   response.statusCode = 302;
   response.setHeader("location", `sms:${phoneNumber}?body=${body}`);
   response.end();
 };
+
+function getRequestedBody(value) {
+  const candidate = Array.isArray(value) ? value[0] : value;
+
+  if (typeof candidate !== "string") {
+    return "";
+  }
+
+  return candidate.replace(/[\r\n]+/g, " ").trim().slice(0, 220);
+}
 
 function normalizePhoneNumber(phoneNumber) {
   if (typeof phoneNumber !== "string") {

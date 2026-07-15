@@ -629,6 +629,24 @@ h1 {
   background: #8a5a36;
 }
 
+.wins-button {
+  display: grid;
+  gap: 1px;
+  min-width: 104px;
+  background: #53644b;
+  text-align: left;
+}
+
+.wins-button strong {
+  color: #f9d77b;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.wins-button strong.bean-bump {
+  animation: bean-bump 420ms ease;
+}
+
 .icon-button:hover,
 .mode-button:hover,
 .quick-button:hover,
@@ -718,6 +736,332 @@ h1 {
   display: inline-block;
   margin-right: 4px;
   font-size: 1.05rem;
+}
+
+.wins-dialog {
+  width: min(760px, calc(100% - 24px));
+  max-height: min(88vh, 900px);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(81, 58, 43, 0.18);
+  border-radius: 16px;
+  background: #fff9ed;
+  color: var(--ink);
+  box-shadow: 0 32px 90px rgba(45, 29, 18, 0.34);
+}
+
+.wins-dialog::backdrop {
+  background: rgba(45, 35, 28, 0.56);
+  backdrop-filter: blur(5px);
+}
+
+.wins-dialog[open] {
+  animation: cupboard-open 220ms ease-out;
+}
+
+.wins-shell {
+  display: grid;
+  gap: 16px;
+  max-height: min(88vh, 900px);
+  overflow-y: auto;
+  padding: clamp(18px, 4vw, 30px);
+  background:
+    radial-gradient(circle at 92% 4%, rgba(245, 201, 93, 0.22), transparent 24%),
+    linear-gradient(145deg, #fffaf0, #f7edda);
+}
+
+.wins-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: start;
+}
+
+.wins-kicker,
+.wins-header h2,
+.wins-header p {
+  margin: 0;
+}
+
+.wins-kicker {
+  color: #7a4c2d;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.wins-header h2 {
+  margin-top: 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-style: italic;
+  line-height: 1;
+}
+
+.wins-header p:last-child {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.wins-close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(81, 58, 43, 0.14);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.88);
+  color: #513a2b;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.bean-balance {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid rgba(122, 76, 45, 0.15);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.82);
+  box-shadow: 0 12px 30px rgba(91, 61, 45, 0.08);
+}
+
+.bean-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50% 44% 50% 44%;
+  background: linear-gradient(145deg, #8a5a36, #4f2e1d);
+  color: rgba(255, 255, 255, 0.18);
+  font-size: 0.7rem;
+  transform: rotate(-18deg);
+  box-shadow: inset 5px 5px 8px rgba(255, 235, 202, 0.13), 0 8px 16px rgba(79, 46, 29, 0.2);
+}
+
+.bean-balance div {
+  display: grid;
+  line-height: 1;
+}
+
+.bean-balance strong {
+  color: #5e3923;
+  font-size: 1.65rem;
+}
+
+.bean-balance div span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.bean-balance small {
+  justify-self: end;
+  color: var(--home-deep);
+  font-weight: 800;
+}
+
+.quiz-card,
+.reward-section {
+  padding: clamp(16px, 3vw, 22px);
+  border: 1px solid rgba(81, 58, 43, 0.13);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.9);
+  box-shadow: 0 16px 38px rgba(91, 61, 45, 0.08);
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: start;
+}
+
+.section-heading p,
+.section-heading h3 {
+  margin: 0;
+}
+
+.section-heading p {
+  color: #7a4c2d;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.section-heading h3 {
+  margin-top: 3px;
+  font-size: 1.18rem;
+}
+
+.section-heading > span,
+.quiz-reward {
+  color: var(--home-deep);
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.quiz-prompt {
+  margin: 18px 0 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.quiz-options {
+  display: grid;
+  gap: 9px;
+}
+
+.quiz-option {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid rgba(81, 58, 43, 0.14);
+  border-radius: 9px;
+  background: #fffaf2;
+  color: var(--ink);
+  font-weight: 750;
+  line-height: 1.3;
+  text-align: left;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.quiz-option:hover:not(:disabled),
+.quiz-option:focus-visible:not(:disabled) {
+  outline: none;
+  border-color: rgba(83, 100, 75, 0.48);
+  transform: translateX(3px);
+}
+
+.quiz-option.correct {
+  border-color: rgba(83, 100, 75, 0.5);
+  background: #eef5e9;
+}
+
+.quiz-option.selected:not(.correct) {
+  background: #f8eee1;
+}
+
+.quiz-option:disabled {
+  cursor: default;
+}
+
+.quiz-feedback,
+.reward-status {
+  min-height: 22px;
+  margin: 12px 0 0;
+  color: var(--home-deep);
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.next-question {
+  margin-top: 12px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--home-deep);
+  color: white;
+  font-weight: 850;
+}
+
+.reward-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.reward-card {
+  display: grid;
+  gap: 5px;
+  justify-items: start;
+  min-height: 112px;
+  padding: 13px;
+  border: 1px solid rgba(81, 58, 43, 0.14);
+  border-radius: 10px;
+  background: #fffaf2;
+  color: var(--ink);
+  text-align: left;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.reward-card:not(:disabled):hover,
+.reward-card:not(:disabled):focus-visible {
+  outline: none;
+  box-shadow: 0 12px 24px rgba(91, 61, 45, 0.12);
+  transform: translateY(-2px);
+}
+
+.reward-card:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.35);
+  opacity: 0.52;
+}
+
+.reward-emoji {
+  font-size: 1.35rem;
+}
+
+.reward-card strong {
+  align-self: end;
+  line-height: 1.2;
+}
+
+.reward-card small {
+  color: #7a4c2d;
+  font-weight: 850;
+}
+
+.wins-history {
+  border-top: 1px solid rgba(81, 58, 43, 0.13);
+  padding-top: 4px;
+}
+
+.wins-history summary {
+  padding: 10px 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.wins-history ol {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wins-history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.72);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.wins-history .earned {
+  color: var(--home-deep);
+}
+
+.wins-history .spent {
+  color: #a85658;
 }
 
 .bad-day-copy p,
@@ -1357,6 +1701,27 @@ textarea:focus {
   }
 }
 
+@keyframes cupboard-open {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bean-bump {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18) rotate(-2deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1364,6 +1729,30 @@ textarea:focus {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (min-width: 861px) {
+  .chat-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
+    width: 100%;
+  }
+
+  .header-actions button {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    white-space: normal;
+  }
+
+  .wins-button {
+    text-align: center;
   }
 }
 
@@ -1509,8 +1898,13 @@ textarea:focus {
     flex: 1;
   }
 
-  .header-actions .recipe-button {
+  .header-actions .recipe-button,
+  .header-actions .wins-button {
     flex-basis: 100%;
+  }
+
+  .wins-button {
+    text-align: center;
   }
 
   h1 {
@@ -1533,6 +1927,15 @@ textarea:focus {
   .recipe-panel {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+
+  .wins-dialog,
+  .wins-shell {
+    max-height: 92vh;
+  }
+
+  .reward-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .bad-day-actions {
@@ -1624,5 +2027,18 @@ textarea:focus {
 
   .composer {
     min-height: 300px;
+  }
+
+  .bean-balance {
+    grid-template-columns: auto 1fr;
+  }
+
+  .bean-balance small {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .reward-grid {
+    grid-template-columns: 1fr;
   }
 }

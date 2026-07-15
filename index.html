@@ -32,6 +32,10 @@
             <p class="subtitle">what are we whipping up today?</p>
           </div>
           <div class="header-actions">
+            <button class="mode-button wins-button" id="winsToggle" type="button" aria-haspopup="dialog">
+              <span>little wins</span>
+              <strong id="headerBeanCount">0 beans</strong>
+            </button>
             <button class="mode-button recipe-button" id="recipeToggle" type="button" aria-expanded="false" aria-controls="recipePanel">help me make a recipe</button>
             <button class="mode-button" id="badDayToggle" type="button" aria-expanded="false" aria-controls="badDayPanel">bad day</button>
             <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
@@ -129,6 +133,58 @@
         </form>
       </section>
     </main>
+
+    <dialog class="wins-dialog" id="winsDialog" aria-labelledby="winsTitle">
+      <div class="wins-shell">
+        <header class="wins-header">
+          <div>
+            <p class="wins-kicker">Snoopy's little wins</p>
+            <h2 id="winsTitle">the cocoa bean cupboard</h2>
+            <p>There are no bad scores here. Showing up always counts.</p>
+          </div>
+          <form method="dialog">
+            <button class="wins-close" type="submit" aria-label="Close little wins">×</button>
+          </form>
+        </header>
+
+        <div class="bean-balance" aria-live="polite">
+          <span class="bean-icon" aria-hidden="true">●</span>
+          <div><strong id="beanBalance">0</strong><span>Cocoa Beans</span></div>
+          <small id="dailyBeanNote">12 beans available today</small>
+        </div>
+
+        <section class="quiz-card" aria-labelledby="quizHeading">
+          <div class="section-heading">
+            <div>
+              <p>today's tiny game</p>
+              <h3 id="quizHeading">Choose what feels right</h3>
+            </div>
+            <span class="quiz-reward">+2 · bonus +1</span>
+          </div>
+          <p class="quiz-prompt" id="quizPrompt"></p>
+          <div class="quiz-options" id="quizOptions"></div>
+          <p class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite"></p>
+          <button class="next-question" id="nextQuestion" type="button" hidden>another little win</button>
+        </section>
+
+        <section class="reward-section" aria-labelledby="rewardHeading">
+          <div class="section-heading">
+            <div>
+              <p>spend your beans</p>
+              <h3 id="rewardHeading">Maz's reward cupboard</h3>
+            </div>
+            <span>fulfilled by Maz ♡</span>
+          </div>
+          <div class="reward-grid" id="rewardList"></div>
+          <p class="reward-status" id="rewardStatus" role="status" aria-live="polite"></p>
+        </section>
+
+        <details class="wins-history">
+          <summary>recent bean history</summary>
+          <ol id="winsHistory"></ol>
+        </details>
+      </div>
+    </dialog>
 
     <script src="/script.js" defer></script>
   </body>

@@ -16,9 +16,23 @@ const careLightsEl = document.querySelector("#careLights");
 const careNoteEl = document.querySelector("#careNote");
 const dogWisdomEl = document.querySelector("#dogWisdom");
 const dogWisdomButtons = document.querySelectorAll(".composer-buddy");
+const winsToggle = document.querySelector("#winsToggle");
+const winsDialog = document.querySelector("#winsDialog");
+const headerBeanCount = document.querySelector("#headerBeanCount");
+const beanBalance = document.querySelector("#beanBalance");
+const dailyBeanNote = document.querySelector("#dailyBeanNote");
+const quizPrompt = document.querySelector("#quizPrompt");
+const quizOptions = document.querySelector("#quizOptions");
+const quizFeedback = document.querySelector("#quizFeedback");
+const nextQuestion = document.querySelector("#nextQuestion");
+const rewardList = document.querySelector("#rewardList");
+const rewardStatus = document.querySelector("#rewardStatus");
+const winsHistory = document.querySelector("#winsHistory");
 
 const STORAGE_KEY = "waliya-cozy-chat";
 const CHECK_IN_STORAGE_KEY = "waliya-check-in";
+const WINS_STORAGE_KEY = "waliya-little-wins-v1";
+const DAILY_BEAN_LIMIT = 12;
 const CARE_LIGHT_INTERVAL_MS = 15000;
 const CARE_LIGHT_JITTER_MS = 2500;
 const DEFAULT_SUPPORT_MODE = "listen";
@@ -27,6 +41,72 @@ const RECIPE_PROMPTS = {
   breakfast: "help me make breakfast 🍳",
   lunch: "help me make lunch 🥪"
 };
+const LITTLE_WIN_QUESTIONS = [
+  {
+    id: "kind-rest",
+    prompt: "You had a low-energy day. Which thought deserves the chef's kiss?",
+    options: ["I wasted the whole day.", "My body needed a slower day, and that still counts.", "Everyone else handles life better."],
+    correct: 1,
+    note: "Rest is something a body needs, not something a person has to earn."
+  },
+  {
+    id: "kind-mistake",
+    prompt: "A recipe did not turn out. What is the kindest next thought?",
+    options: ["I am terrible at everything.", "I should never try again.", "One messy attempt is how people learn."],
+    correct: 2,
+    note: "A disappointing result is information—not a verdict about you."
+  },
+  {
+    id: "kind-friend",
+    prompt: "A friend says she feels like a burden. What would you tell her?",
+    options: ["Having needs does not make you a burden.", "Try to need less from everyone.", "Keep it to yourself until it passes."],
+    correct: 0,
+    note: "That kindness belongs to you too."
+  },
+  {
+    id: "kind-progress",
+    prompt: "Which one sounds most like real progress?",
+    options: ["Never struggling again.", "Doing everything perfectly.", "Trying one gentle thing even on a hard day."],
+    correct: 2,
+    note: "Small and imperfect progress is still real progress."
+  },
+  {
+    id: "tiramisu-name",
+    prompt: "Tiny kitchen trivia: what does “tiramisu” roughly mean?",
+    options: ["Pick me up", "Sweet little cloud", "Coffee cake"],
+    correct: 0,
+    note: "Pick me up—an extremely appropriate dessert for this kitchen."
+  },
+  {
+    id: "tiramisu-layer",
+    prompt: "Which ingredient traditionally makes tiramisu creamy?",
+    options: ["Mascarpone", "Cheddar", "Coconut water"],
+    correct: 0,
+    note: "Mascarpone is the soft, creamy heart of the operation."
+  },
+  {
+    id: "kitchen-pause",
+    prompt: "When everything feels like too much, what is a useful first move?",
+    options: ["Solve the entire week immediately.", "Pick one tiny next thing.", "Be mean to yourself for freezing."],
+    correct: 1,
+    note: "One tiny next thing is enough to begin."
+  },
+  {
+    id: "kind-comparison",
+    prompt: "You catch yourself comparing your life to someone else's. Which response is fairest?",
+    options: ["Their highlight does not define my whole story.", "I must be falling behind.", "I need to become them."],
+    correct: 0,
+    note: "Someone else's timeline cannot measure your worth."
+  }
+];
+const LITTLE_WIN_REWARDS = [
+  { id: "love-note", title: "custom love note", cost: 15, emoji: "💌" },
+  { id: "treat", title: "coffee or dessert", cost: 25, emoji: "☕" },
+  { id: "movie", title: "choose movie night", cost: 40, emoji: "🎬" },
+  { id: "breakfast", title: "breakfast made by Maz", cost: 60, emoji: "🥞" },
+  { id: "gift-card", title: "$10 gift card", cost: 75, emoji: "🎁" },
+  { id: "date", title: "choose a date activity", cost: 100, emoji: "✨" }
+];
 const MOOD_SETTINGS = {
   soft: {
     label: "soft",
@@ -304,6 +384,8 @@ const CARE_NOTES = [
 let careNoteTimer;
 let careLightInterval;
 let dogWisdomTimer;
+let winsState = loadWinsState();
+let currentWinQuestion = null;
 
 const savedCheckIn = loadCheckInState();
 let currentMood = savedCheckIn.mood;
@@ -322,6 +404,7 @@ if (messages.length === 0) {
 renderCheckInState();
 renderMessages();
 renderCareLights();
+renderLittleWins();
 startCareLightTimer();
 resizeInput();
 input.focus();
@@ -354,6 +437,38 @@ clearButton.addEventListener("click", () => {
   saveMessages();
   renderMessages();
   input.focus();
+});
+
+winsToggle.addEventListener("click", () => {
+  renderLittleWins();
+  winsDialog.showModal();
+});
+
+winsDialog.addEventListener("click", (event) => {
+  if (event.target === winsDialog) {
+    winsDialog.close();
+  }
+});
+
+quizOptions.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-answer]");
+
+  if (!button || !currentWinQuestion || button.disabled) return;
+
+  answerLittleWin(Number(button.dataset.answer));
+});
+
+nextQuestion.addEventListener("click", () => {
+  currentWinQuestion = null;
+  renderLittleWinQuestion();
+});
+
+rewardList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-reward]");
+
+  if (!button) return;
+
+  redeemLittleWin(button.dataset.reward);
 });
 
 recipeToggle.addEventListener("click", () => {
@@ -648,6 +763,253 @@ function showDogWisdom() {
     dogWisdomEl.textContent = "tap a sous-chef for kitchen wisdom";
     dogWisdomEl.classList.remove("visible");
   }, 6500);
+}
+
+function renderLittleWins() {
+  renderBeanBalance();
+  renderLittleWinQuestion();
+  renderRewards();
+  renderWinsHistory();
+}
+
+function renderBeanBalance() {
+  const remaining = getDailyBeansRemaining();
+  headerBeanCount.textContent = `${winsState.balance} ${winsState.balance === 1 ? "bean" : "beans"}`;
+  beanBalance.textContent = winsState.balance;
+  dailyBeanNote.textContent = remaining > 0
+    ? `${remaining} ${remaining === 1 ? "bean" : "beans"} available today`
+    : "today's bean jar is full ♡";
+}
+
+function renderLittleWinQuestion() {
+  quizFeedback.textContent = "";
+  nextQuestion.hidden = true;
+
+  if (getDailyBeansRemaining() <= 0) {
+    currentWinQuestion = null;
+    quizPrompt.textContent = "You filled today's cocoa jar. Snoopy prescribes something cozy and no more homework.";
+    quizOptions.innerHTML = "";
+    return;
+  }
+
+  const completedToday = getCompletedQuestionsToday();
+  const available = LITTLE_WIN_QUESTIONS.filter((question) => !completedToday.includes(question.id));
+
+  if (available.length === 0) {
+    currentWinQuestion = null;
+    quizPrompt.textContent = "You finished every little win in today's cupboard. Come back tomorrow for a fresh batch.";
+    quizOptions.innerHTML = "";
+    return;
+  }
+
+  if (!currentWinQuestion || completedToday.includes(currentWinQuestion.id)) {
+    currentWinQuestion = available[Math.floor(Math.random() * available.length)];
+  }
+
+  quizPrompt.textContent = currentWinQuestion.prompt;
+  quizOptions.innerHTML = "";
+
+  currentWinQuestion.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "quiz-option";
+    button.dataset.answer = String(index);
+    button.textContent = option;
+    quizOptions.append(button);
+  });
+}
+
+function answerLittleWin(answerIndex) {
+  const question = currentWinQuestion;
+  const completedToday = getCompletedQuestionsToday();
+
+  if (!question || completedToday.includes(question.id)) return;
+
+  const isCorrect = answerIndex === question.correct;
+  const requestedBeans = isCorrect ? 3 : 2;
+  const beansEarned = Math.min(requestedBeans, getDailyBeansRemaining());
+  const today = getLocalDateKey();
+
+  winsState.completed[today] = [...completedToday, question.id];
+  winsState.balance += beansEarned;
+  winsState.history.unshift({
+    id: makeLocalId(),
+    date: today,
+    delta: beansEarned,
+    label: isCorrect ? "little win + kind-answer bonus" : "little win for showing up"
+  });
+  trimWinsState();
+  saveWinsState();
+
+  quizOptions.querySelectorAll("[data-answer]").forEach((button) => {
+    const index = Number(button.dataset.answer);
+    button.disabled = true;
+    button.classList.toggle("correct", index === question.correct);
+    button.classList.toggle("selected", index === answerIndex);
+  });
+
+  quizFeedback.textContent = isCorrect
+    ? `Chef's kiss! +${beansEarned} Cocoa Beans. ${question.note}`
+    : `+${beansEarned} Cocoa Beans for showing up. ${question.note}`;
+  nextQuestion.hidden = getDailyBeansRemaining() <= 0;
+  renderBeanBalance();
+  renderRewards();
+  renderWinsHistory();
+  bumpBeanCount();
+}
+
+function renderRewards() {
+  rewardList.innerHTML = "";
+
+  LITTLE_WIN_REWARDS.forEach((reward) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "reward-card";
+    button.dataset.reward = reward.id;
+    button.disabled = winsState.balance < reward.cost;
+    button.innerHTML = `<span class="reward-emoji" aria-hidden="true">${reward.emoji}</span><strong>${reward.title}</strong><small>${reward.cost} beans</small>`;
+    rewardList.append(button);
+  });
+}
+
+function redeemLittleWin(rewardId) {
+  const reward = LITTLE_WIN_REWARDS.find((item) => item.id === rewardId);
+
+  if (!reward || winsState.balance < reward.cost) {
+    rewardStatus.textContent = "A few more little wins and this cupboard door will open.";
+    return;
+  }
+
+  const confirmed = window.confirm(`Redeem ${reward.cost} Cocoa Beans for “${reward.title}”?`);
+
+  if (!confirmed) return;
+
+  const today = getLocalDateKey();
+  winsState.balance -= reward.cost;
+  winsState.history.unshift({
+    id: makeLocalId(),
+    date: today,
+    delta: -reward.cost,
+    label: `redeemed: ${reward.title}`
+  });
+  winsState.redemptions.unshift({
+    id: makeLocalId(),
+    date: today,
+    rewardId: reward.id,
+    title: reward.title,
+    cost: reward.cost
+  });
+  trimWinsState();
+  saveWinsState();
+  renderBeanBalance();
+  renderRewards();
+  renderWinsHistory();
+  rewardStatus.textContent = `${reward.title} redeemed—opening a text to Maz now.`;
+
+  const text = `I redeemed ${reward.cost} Cocoa Beans for ${reward.title} ${reward.emoji}`;
+  window.setTimeout(() => {
+    window.location.assign(`/api/text-maz?body=${encodeURIComponent(text)}`);
+  }, 350);
+}
+
+function renderWinsHistory() {
+  winsHistory.innerHTML = "";
+
+  if (winsState.history.length === 0) {
+    const empty = document.createElement("li");
+    empty.textContent = "The cocoa jar is waiting for its first little win.";
+    winsHistory.append(empty);
+    return;
+  }
+
+  winsState.history.slice(0, 8).forEach((entry) => {
+    const item = document.createElement("li");
+    const label = document.createElement("span");
+    const amountLabel = document.createElement("strong");
+    const amount = entry.delta > 0 ? `+${entry.delta}` : String(entry.delta);
+    label.textContent = entry.label;
+    amountLabel.className = entry.delta > 0 ? "earned" : "spent";
+    amountLabel.textContent = amount;
+    item.append(label, amountLabel);
+    winsHistory.append(item);
+  });
+}
+
+function loadWinsState() {
+  const emptyState = { balance: 0, completed: {}, history: [], redemptions: [] };
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(WINS_STORAGE_KEY) || "null");
+
+    if (!saved || typeof saved !== "object") return emptyState;
+
+    return {
+      balance: Number.isFinite(saved.balance) && saved.balance >= 0 ? Math.floor(saved.balance) : 0,
+      completed: saved.completed && typeof saved.completed === "object" ? saved.completed : {},
+      history: Array.isArray(saved.history)
+        ? saved.history
+            .filter((entry) => entry && typeof entry === "object" && Number.isFinite(entry.delta))
+            .map((entry) => ({
+              id: typeof entry.id === "string" ? entry.id : makeLocalId(),
+              date: typeof entry.date === "string" ? entry.date : "",
+              delta: Math.trunc(entry.delta),
+              label: typeof entry.label === "string" ? entry.label.slice(0, 120) : "cocoa bean update"
+            }))
+        : [],
+      redemptions: Array.isArray(saved.redemptions) ? saved.redemptions.filter((entry) => entry && typeof entry === "object") : []
+    };
+  } catch {
+    return emptyState;
+  }
+}
+
+function saveWinsState() {
+  try {
+    localStorage.setItem(WINS_STORAGE_KEY, JSON.stringify(winsState));
+  } catch {
+    rewardStatus.textContent = "This browser could not save the cocoa jar. Try again without private browsing.";
+  }
+}
+
+function trimWinsState() {
+  winsState.history = winsState.history.slice(0, 50);
+  winsState.redemptions = winsState.redemptions.slice(0, 20);
+
+  const recentDates = Object.keys(winsState.completed).sort().slice(-14);
+  winsState.completed = Object.fromEntries(recentDates.map((date) => [date, winsState.completed[date]]));
+}
+
+function getCompletedQuestionsToday() {
+  const completed = winsState.completed[getLocalDateKey()];
+  return Array.isArray(completed) ? completed : [];
+}
+
+function getDailyBeansRemaining() {
+  const today = getLocalDateKey();
+  const earnedToday = winsState.history
+    .filter((entry) => entry.date === today && entry.delta > 0)
+    .reduce((total, entry) => total + entry.delta, 0);
+
+  return Math.max(0, DAILY_BEAN_LIMIT - earnedToday);
+}
+
+function getLocalDateKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function makeLocalId() {
+  return typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function bumpBeanCount() {
+  headerBeanCount.classList.remove("bean-bump");
+  window.requestAnimationFrame(() => headerBeanCount.classList.add("bean-bump"));
 }
 
 function shuffle(items) {
