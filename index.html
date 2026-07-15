@@ -8,7 +8,7 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="side-scene chef-scene" aria-label="Snoopy making tiramisu in a cozy kitchen">
+      <section class="side-scene chef-scene" id="chefScene" data-scene="solo" aria-label="Snoopy making tiramisu in a cozy kitchen">
         <div class="kitchen-copy">
           <p>chef Snoopy's special</p>
           <h2>tiramisu night</h2>
@@ -18,9 +18,14 @@
         <div class="cocoa-dust" aria-hidden="true">
           <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         </div>
+        <button class="scene-toggle" id="sceneToggle" type="button" aria-pressed="false">
+          <span class="scene-toggle-icon" aria-hidden="true">↻</span>
+          <span id="sceneToggleLabel">cook together</span>
+        </button>
         <figure class="chef-snoopy">
-          <img src="/assets/chef-snoopy-tiramisu.png" alt="Snoopy in a chef hat dusting cocoa over a homemade tiramisu" />
-          <figcaption>currently dusting cocoa...</figcaption>
+          <img class="scene-image active" id="soloSceneImage" src="/assets/chef-snoopy-tiramisu.png" alt="Snoopy in a chef hat dusting cocoa over a homemade tiramisu" />
+          <img class="scene-image" id="togetherSceneImage" src="/assets/waliya-snoopy-tiramisu.png" alt="Waliya and Snoopy cooking tiramisu together in a cozy kitchen" />
+          <figcaption id="sceneCaption">currently dusting cocoa...</figcaption>
         </figure>
       </section>
 

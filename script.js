@@ -28,10 +28,17 @@ const nextQuestion = document.querySelector("#nextQuestion");
 const rewardList = document.querySelector("#rewardList");
 const rewardStatus = document.querySelector("#rewardStatus");
 const winsHistory = document.querySelector("#winsHistory");
+const chefScene = document.querySelector("#chefScene");
+const sceneToggle = document.querySelector("#sceneToggle");
+const sceneToggleLabel = document.querySelector("#sceneToggleLabel");
+const sceneCaption = document.querySelector("#sceneCaption");
+const soloSceneImage = document.querySelector("#soloSceneImage");
+const togetherSceneImage = document.querySelector("#togetherSceneImage");
 
 const STORAGE_KEY = "waliya-cozy-chat";
 const CHECK_IN_STORAGE_KEY = "waliya-check-in";
 const WINS_STORAGE_KEY = "waliya-little-wins-v1";
+const SCENE_STORAGE_KEY = "waliya-kitchen-scene";
 const DAILY_BEAN_LIMIT = 12;
 const CARE_LIGHT_INTERVAL_MS = 15000;
 const CARE_LIGHT_JITTER_MS = 2500;
@@ -405,6 +412,7 @@ renderCheckInState();
 renderMessages();
 renderCareLights();
 renderLittleWins();
+applyKitchenScene(loadKitchenScene());
 startCareLightTimer();
 resizeInput();
 input.focus();
@@ -469,6 +477,17 @@ rewardList.addEventListener("click", (event) => {
   if (!button) return;
 
   redeemLittleWin(button.dataset.reward);
+});
+
+sceneToggle.addEventListener("click", () => {
+  const nextScene = chefScene.dataset.scene === "together" ? "solo" : "together";
+  applyKitchenScene(nextScene);
+
+  try {
+    localStorage.setItem(SCENE_STORAGE_KEY, nextScene);
+  } catch {
+    // The scene can still switch when browser storage is unavailable.
+  }
 });
 
 recipeToggle.addEventListener("click", () => {
@@ -763,6 +782,28 @@ function showDogWisdom() {
     dogWisdomEl.textContent = "tap a sous-chef for kitchen wisdom";
     dogWisdomEl.classList.remove("visible");
   }, 6500);
+}
+
+function applyKitchenScene(scene) {
+  const showTogether = scene === "together";
+  chefScene.dataset.scene = showTogether ? "together" : "solo";
+  sceneToggle.setAttribute("aria-pressed", String(showTogether));
+  sceneToggle.setAttribute(
+    "aria-label",
+    showTogether ? "Show chef Snoopy cooking alone" : "Show Waliya and Snoopy cooking together"
+  );
+  sceneToggleLabel.textContent = showTogether ? "chef Snoopy" : "cook together";
+  sceneCaption.textContent = showTogether ? "Waliya + chef Snoopy ♡" : "currently dusting cocoa...";
+  soloSceneImage.classList.toggle("active", !showTogether);
+  togetherSceneImage.classList.toggle("active", showTogether);
+}
+
+function loadKitchenScene() {
+  try {
+    return localStorage.getItem(SCENE_STORAGE_KEY) === "together" ? "together" : "solo";
+  } catch {
+    return "solo";
+  }
 }
 
 function renderLittleWins() {
