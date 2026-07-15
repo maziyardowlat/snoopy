@@ -552,8 +552,8 @@ figcaption {
 }
 
 .chat-panel {
-  display: grid;
-  grid-template-rows: auto auto auto auto auto minmax(320px, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   background: rgba(255, 253, 248, 0.94);
   backdrop-filter: blur(18px);
 }
@@ -985,7 +985,8 @@ h1 {
 
 .chat-body {
   position: relative;
-  min-height: 0;
+  flex: 1 1 320px;
+  min-height: 320px;
   overflow: hidden;
   background:
     linear-gradient(rgba(255, 253, 248, 0.78), rgba(255, 253, 248, 0.78)),
@@ -1489,8 +1490,9 @@ textarea:focus {
     font-size: 0.72rem;
   }
 
-  .chat-panel {
-    grid-template-rows: auto auto auto auto auto minmax(360px, 58vh) auto;
+  .chat-body {
+    flex-basis: min(58vh, 520px);
+    min-height: 360px;
   }
 
   .chat-header {
