@@ -12,7 +12,6 @@
         <div class="kitchen-copy">
           <p>chef Snoopy's special</p>
           <h2>tiramisu night</h2>
-          <span>yes, the whole tub ♡</span>
         </div>
         <div class="steam steam-one" aria-hidden="true"></div>
         <div class="steam steam-two" aria-hidden="true"></div>
@@ -33,10 +32,23 @@
             <p class="subtitle">what are we whipping up today?</p>
           </div>
           <div class="header-actions">
+            <button class="mode-button recipe-button" id="recipeToggle" type="button" aria-expanded="false" aria-controls="recipePanel">help me make a recipe</button>
             <button class="mode-button" id="badDayToggle" type="button" aria-expanded="false" aria-controls="badDayPanel">bad day</button>
             <button class="icon-button" id="clearChat" type="button" title="Clear chat" aria-label="Clear chat">Clear</button>
           </div>
         </header>
+
+        <section class="recipe-panel" id="recipePanel" aria-label="Recipe helper" hidden>
+          <div class="recipe-copy">
+            <p>what are we making?</p>
+            <span>pick a course and sous-chef Snoopy will help</span>
+          </div>
+          <div class="recipe-actions" aria-label="Choose a recipe category">
+            <button type="button" class="recipe-choice" data-recipe="dessert"><span aria-hidden="true">🍰</span> dessert</button>
+            <button type="button" class="recipe-choice" data-recipe="breakfast"><span aria-hidden="true">🍳</span> breakfast</button>
+            <button type="button" class="recipe-choice" data-recipe="lunch"><span aria-hidden="true">🥪</span> lunch</button>
+          </div>
+        </section>
 
         <section class="bad-day-panel" id="badDayPanel" aria-label="Bad day tools" hidden>
           <div class="bad-day-copy">

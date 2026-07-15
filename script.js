@@ -3,6 +3,9 @@ const input = document.querySelector("#messageInput");
 const messagesEl = document.querySelector("#messages");
 const sendButton = document.querySelector("#sendButton");
 const clearButton = document.querySelector("#clearChat");
+const recipeToggle = document.querySelector("#recipeToggle");
+const recipePanel = document.querySelector("#recipePanel");
+const recipeActions = document.querySelector(".recipe-actions");
 const badDayToggle = document.querySelector("#badDayToggle");
 const badDayPanel = document.querySelector("#badDayPanel");
 const badDayActions = document.querySelector(".bad-day-actions");
@@ -19,6 +22,11 @@ const CHECK_IN_STORAGE_KEY = "waliya-check-in";
 const CARE_LIGHT_INTERVAL_MS = 15000;
 const CARE_LIGHT_JITTER_MS = 2500;
 const DEFAULT_SUPPORT_MODE = "listen";
+const RECIPE_PROMPTS = {
+  dessert: "help me make a dessert 🍰",
+  breakfast: "help me make breakfast 🍳",
+  lunch: "help me make lunch 🥪"
+};
 const MOOD_SETTINGS = {
   soft: {
     label: "soft",
@@ -348,12 +356,36 @@ clearButton.addEventListener("click", () => {
   input.focus();
 });
 
+recipeToggle.addEventListener("click", () => {
+  const shouldOpen = recipePanel.hidden;
+  recipePanel.hidden = !shouldOpen;
+  recipeToggle.setAttribute("aria-expanded", String(shouldOpen));
+
+  if (shouldOpen) {
+    badDayPanel.hidden = true;
+    badDayToggle.setAttribute("aria-expanded", "false");
+    showCareNote("Chef mode is open. Pick what sounds good.");
+  }
+});
+
+recipeActions.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-recipe]");
+
+  if (!button || !RECIPE_PROMPTS[button.dataset.recipe]) return;
+
+  recipePanel.hidden = true;
+  recipeToggle.setAttribute("aria-expanded", "false");
+  await sendChatMessage(RECIPE_PROMPTS[button.dataset.recipe]);
+});
+
 badDayToggle.addEventListener("click", () => {
   const shouldOpen = badDayPanel.hidden;
   badDayPanel.hidden = !shouldOpen;
   badDayToggle.setAttribute("aria-expanded", String(shouldOpen));
 
   if (shouldOpen) {
+    recipePanel.hidden = true;
+    recipeToggle.setAttribute("aria-expanded", "false");
     showCareNote("Porch light mode is open. No pressure, just one small next thing.");
   }
 });
