@@ -1840,7 +1840,7 @@ textarea:focus {
   }
 
   .chef-snoopy #togetherSceneImage {
-    object-position: center 31%;
+    object-position: center top;
   }
 
   .kitchen-copy h2 {
