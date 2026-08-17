@@ -41,6 +41,10 @@ const boardTaskInput = document.querySelector("#boardTaskInput");
 const boardExplanationInput = document.querySelector("#boardExplanationInput");
 const boardDateInput = document.querySelector("#boardDateInput");
 const boardOwnerInput = document.querySelector("#boardOwnerInput");
+const boardForInput = document.querySelector("#boardForInput");
+const boardOwnerFilter = document.querySelector("#boardOwnerFilter");
+const boardForFilter = document.querySelector("#boardForFilter");
+const boardClearFilters = document.querySelector("#boardClearFilters");
 const boardAddButton = document.querySelector("#boardAddButton");
 const sharedBoard = document.querySelector("#sharedBoard");
 const boardStatus = document.querySelector("#boardStatus");
@@ -450,7 +454,15 @@ boardForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const title = boardTaskInput.value.trim();
   if (!title) return;
-  await createBoardItem(title, boardExplanationInput.value.trim(), boardDateInput.value, boardOwnerInput.value);
+  await createBoardItem(title, boardExplanationInput.value.trim(), boardDateInput.value, boardOwnerInput.value, boardForInput.value);
+});
+
+boardOwnerFilter.addEventListener("change", renderBoard);
+boardForFilter.addEventListener("change", renderBoard);
+boardClearFilters.addEventListener("click", () => {
+  boardOwnerFilter.value = "all";
+  boardForFilter.value = "all";
+  renderBoard();
 });
 
 sharedBoard.addEventListener("click", async (event) => {
@@ -464,9 +476,11 @@ sharedBoard.addEventListener("change", async (event) => {
   const select = event.target.closest("[data-board-move]");
   const explanation = event.target.closest("[data-board-explanation]");
   const dueDate = event.target.closest("[data-board-date]");
+  const forPerson = event.target.closest("[data-board-for]");
   if (select) await updateBoardItem(select.dataset.boardMove, { column: select.value });
   if (explanation) await updateBoardItem(explanation.dataset.boardExplanation, { explanation: explanation.value.trim() });
   if (dueDate) await updateBoardItem(dueDate.dataset.boardDate, { dueDate: dueDate.value });
+  if (forPerson) await updateBoardItem(forPerson.dataset.boardFor, { forPerson: forPerson.value });
 });
 
 sharedBoard.addEventListener("dragstart", (event) => {
@@ -718,7 +732,7 @@ async function loadBoard() {
   }
 }
 
-async function createBoardItem(title, explanation, dueDate, owner) {
+async function createBoardItem(title, explanation, dueDate, owner, forPerson) {
   boardAddButton.disabled = true;
   setBoardStatus("adding card...");
 
@@ -726,7 +740,7 @@ async function createBoardItem(title, explanation, dueDate, owner) {
     const response = await fetch("/api/board", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ title, explanation, dueDate, owner, column: "radar" })
+      body: JSON.stringify({ title, explanation, dueDate, owner, forPerson, column: "radar" })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Could not add that card.");
@@ -794,8 +808,14 @@ async function deleteBoardItem(id) {
 
 function renderBoard() {
   headerBoardCount.textContent = `${boardItems.filter((item) => item.column !== "done").length} open`;
+  const visibleItems = boardItems.filter((item) => {
+    const matchesOwner = boardOwnerFilter.value === "all" || item.owner === boardOwnerFilter.value;
+    const cardFor = item.forPerson || "Both";
+    const matchesFor = boardForFilter.value === "all" || cardFor === boardForFilter.value || (cardFor === "Both" && boardForFilter.value !== "Both");
+    return matchesOwner && matchesFor;
+  });
   sharedBoard.innerHTML = BOARD_COLUMNS.map((column) => {
-    const items = boardItems.filter((item) => item.column === column.id);
+    const items = visibleItems.filter((item) => item.column === column.id);
     return `
       <section class="board-column" data-board-column="${column.id}">
         <header><div><span class="column-paw" aria-hidden="true">🐾</span><h3>${column.title}</h3></div><strong>${items.length}</strong></header>
@@ -822,8 +842,14 @@ function renderBoardCard(item) {
         <span>finish by</span>
         <input data-board-date="${escapeBoardText(item.id)}" type="date" value="${escapeBoardText(item.dueDate || "")}" />
       </label>
+      <label class="card-for">
+        <span>who it's for</span>
+        <select data-board-for="${escapeBoardText(item.id)}">
+          ${["Waliya", "Maz", "Both"].map((person) => `<option value="${person}"${person === (item.forPerson || "Both") ? " selected" : ""}>${person}</option>`).join("")}
+        </select>
+      </label>
       ${calendarUrl ? `<a class="calendar-link" href="${escapeBoardText(calendarUrl)}">add to calendar</a>` : ""}
-      <div class="board-card-meta"><span>added by ${escapeBoardText(item.owner)}</span><span>${formatBoardDate(item.updatedAt)}</span></div>
+      <div class="board-card-meta"><span>added by ${escapeBoardText(item.owner)}</span><span>for ${escapeBoardText(item.forPerson || "Both")}</span><span>${formatBoardDate(item.updatedAt)}</span></div>
       <div class="board-card-actions">
         <select data-board-move="${escapeBoardText(item.id)}" aria-label="Move ${escapeBoardText(item.title)}">
           ${BOARD_COLUMNS.map((column) => `<option value="${column.id}"${column.id === item.column ? " selected" : ""}>${column.title}</option>`).join("")}

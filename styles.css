@@ -113,13 +113,18 @@ select {
 .board-button span, .board-button strong { display: block; }
 .board-button strong { color: var(--home-deep); font-size: .68rem; }
 
-.board-composer { display: grid; grid-template-columns: minmax(0, 1fr) 160px 120px 112px; gap: 9px; margin-top: 24px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: #f7efe3; }
+.board-composer { display: grid; grid-template-columns: minmax(0, 1fr) 160px 110px 110px 112px; gap: 9px; margin-top: 24px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: #f7efe3; }
 .board-composer input, .board-composer select, .board-composer textarea { min-width: 0; min-height: 44px; padding: 10px 13px; border: 1px solid #d9c8b5; border-radius: 10px; background: white; color: var(--ink); }
 .board-composer > textarea { grid-column: 1 / -1; resize: vertical; }
 .board-date-field { display: grid; gap: 4px; color: var(--muted); font-size: .66rem; font-weight: 800; }
 .board-date-field input { padding-block: 0; }
 .board-composer button { border: 0; border-radius: 10px; background: var(--home-deep); color: white; font-weight: 850; }
 .board-composer button:disabled { opacity: .55; }
+.board-filters { display: flex; flex-wrap: wrap; gap: 9px; align-items: end; margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf9; }
+.board-filters > strong { align-self: center; margin-right: 3px; font-size: .75rem; }
+.board-filters label { display: grid; gap: 3px; color: var(--muted); font-size: .63rem; font-weight: 800; }
+.board-filters select, .board-filters button { min-height: 34px; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: #faf6f0; color: var(--ink); font-size: .72rem; }
+.board-filters button { font-weight: 800; }
 .board-status { min-height: 22px; margin: 8px 2px; color: var(--home-deep); font-size: .78rem; font-weight: 750; }
 .board-status.error { color: var(--brick-deep); }
 
@@ -137,13 +142,14 @@ select {
 .board-card { padding: 12px; border: 1px solid #e5d6c5; border-radius: 11px; background: #fff; box-shadow: 0 7px 18px rgba(73,61,49,.07); cursor: grab; }
 .board-card.dragging { opacity: .45; }
 .board-card > p { margin: 0; overflow-wrap: anywhere; font-size: .9rem; font-weight: 750; line-height: 1.35; }
-.card-explanation, .card-date { display: grid; gap: 4px; margin-top: 10px; color: var(--muted); font-size: .65rem; font-weight: 800; }
-.card-explanation textarea, .card-date input { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 7px; background: #fffcf8; color: var(--ink); font-size: .74rem; font-weight: 500; }
+.card-explanation, .card-date, .card-for { display: grid; gap: 4px; margin-top: 10px; color: var(--muted); font-size: .65rem; font-weight: 800; }
+.card-explanation textarea, .card-date input, .card-for select { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 7px; background: #fffcf8; color: var(--ink); font-size: .74rem; font-weight: 500; }
 .card-explanation textarea { min-height: 66px; padding: 8px; resize: vertical; line-height: 1.35; }
 .card-date input { height: 34px; padding: 0 7px; }
+.card-for select { height: 34px; padding: 0 7px; }
 .calendar-link { display: block; margin-top: 7px; padding: 7px 9px; border-radius: 7px; background: #edf2e9; color: var(--home-deep); font-size: .7rem; font-weight: 850; text-align: center; text-decoration: none; }
 .calendar-link:hover, .calendar-link:focus-visible { background: #dfe9d9; }
-.board-card-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 9px; color: var(--muted); font-size: .64rem; }
+.board-card-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 8px; margin-top: 9px; color: var(--muted); font-size: .64rem; }
 .board-card-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 5px; margin-top: 9px; }
 .board-card-actions select, .board-card-actions button { min-width: 0; height: 30px; padding: 0 7px; border: 1px solid var(--line); border-radius: 7px; background: #faf6f0; color: var(--ink); font-size: .68rem; }
 .board-card-actions button { font-weight: 800; }

@@ -219,8 +219,34 @@
             <option value="Waliya">Waliya</option>
             <option value="Maz">Maz</option>
           </select>
+          <label class="visually-hidden" for="boardForInput">Who is this for?</label>
+          <select id="boardForInput" aria-label="Who is this for?">
+            <option value="Waliya">for Waliya</option>
+            <option value="Maz">for Maz</option>
+            <option value="Both">for both</option>
+          </select>
           <button id="boardAddButton" type="submit">add card</button>
         </form>
+
+        <section class="board-filters" aria-label="Filter shared board">
+          <strong>show cards</strong>
+          <label>added by
+            <select id="boardOwnerFilter">
+              <option value="all">anyone</option>
+              <option value="Waliya">Waliya</option>
+              <option value="Maz">Maz</option>
+            </select>
+          </label>
+          <label>written for
+            <select id="boardForFilter">
+              <option value="all">anyone</option>
+              <option value="Waliya">Waliya</option>
+              <option value="Maz">Maz</option>
+              <option value="Both">both only</option>
+            </select>
+          </label>
+          <button id="boardClearFilters" type="button">clear filters</button>
+        </section>
 
         <p class="board-status" id="boardStatus" role="status" aria-live="polite"></p>
         <section class="shared-board" id="sharedBoard" aria-label="Shared task board"></section>

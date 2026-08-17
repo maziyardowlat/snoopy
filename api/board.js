@@ -6,6 +6,7 @@ const BOARD_KEY = "waliya:shared-board:v1";
 const LOCAL_BOARD_FILE = path.join(process.cwd(), ".data", "shared-board.json");
 const COLUMNS = new Set(["radar", "help", "reminder", "done"]);
 const OWNERS = new Set(["Waliya", "Maz"]);
+const RECIPIENTS = new Set(["Waliya", "Maz", "Both"]);
 
 module.exports = async function handler(request, response) {
   if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) {
@@ -30,6 +31,7 @@ module.exports = async function handler(request, response) {
         explanation: cleanMultiline(body.explanation, 1200),
         dueDate: cleanDate(body.dueDate),
         owner: OWNERS.has(body.owner) ? body.owner : "Waliya",
+        forPerson: RECIPIENTS.has(body.forPerson) ? body.forPerson : "Both",
         column: COLUMNS.has(body.column) ? body.column : "radar",
         createdAt: now,
         updatedAt: now
@@ -45,9 +47,11 @@ module.exports = async function handler(request, response) {
         const column = body.column === undefined ? item.column : body.column;
         const explanation = body.explanation === undefined ? (item.explanation || "") : cleanMultiline(body.explanation, 1200);
         const dueDate = body.dueDate === undefined ? (item.dueDate || "") : cleanDate(body.dueDate);
+        const forPerson = body.forPerson === undefined ? (item.forPerson || "Both") : body.forPerson;
         if (!title) throw new Error("A card cannot be empty.");
         if (!COLUMNS.has(column)) throw new Error("That board column does not exist.");
-        return { ...item, title, explanation, dueDate, column, updatedAt: new Date().toISOString() };
+        if (!RECIPIENTS.has(forPerson)) throw new Error("Choose who this card is for.");
+        return { ...item, title, explanation, dueDate, forPerson, column, updatedAt: new Date().toISOString() };
       });
     }
 
