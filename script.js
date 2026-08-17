@@ -449,7 +449,8 @@ boardToggle.addEventListener("click", async () => {
   document.body.style.top = `-${boardPageScrollY}px`;
   document.body.classList.add("board-modal-open");
   boardDialog.showModal();
-  boardTaskInput.focus();
+  boardTaskInput.focus({ preventScroll: true });
+  boardDialog.querySelector(".board-shell").scrollTop = 0;
   await loadBoard();
 });
 
