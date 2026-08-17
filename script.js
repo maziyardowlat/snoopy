@@ -34,6 +34,15 @@ const sceneToggleLabel = document.querySelector("#sceneToggleLabel");
 const sceneCaption = document.querySelector("#sceneCaption");
 const soloSceneImage = document.querySelector("#soloSceneImage");
 const togetherSceneImage = document.querySelector("#togetherSceneImage");
+const boardToggle = document.querySelector("#boardToggle");
+const boardDialog = document.querySelector("#boardDialog");
+const boardForm = document.querySelector("#boardForm");
+const boardTaskInput = document.querySelector("#boardTaskInput");
+const boardOwnerInput = document.querySelector("#boardOwnerInput");
+const boardAddButton = document.querySelector("#boardAddButton");
+const sharedBoard = document.querySelector("#sharedBoard");
+const boardStatus = document.querySelector("#boardStatus");
+const headerBoardCount = document.querySelector("#headerBoardCount");
 
 const STORAGE_KEY = "waliya-cozy-chat";
 const CHECK_IN_STORAGE_KEY = "waliya-check-in";
@@ -43,6 +52,12 @@ const DAILY_BEAN_LIMIT = 12;
 const CARE_LIGHT_INTERVAL_MS = 15000;
 const CARE_LIGHT_JITTER_MS = 2500;
 const DEFAULT_SUPPORT_MODE = "listen";
+const BOARD_COLUMNS = [
+  { id: "radar", title: "On my radar", note: "I know about it" },
+  { id: "help", title: "Would like help", note: "Help is welcome here" },
+  { id: "reminder", title: "Reminder is okay", note: "One gentle nudge" },
+  { id: "done", title: "Done", note: "Handled — paws off" }
+];
 const RECIPE_PROMPTS = {
   dessert: "help me make a dessert 🍰",
   breakfast: "help me make breakfast 🍳",
@@ -393,6 +408,8 @@ let careLightInterval;
 let dogWisdomTimer;
 let winsState = loadWinsState();
 let currentWinQuestion = null;
+let boardItems = [];
+let draggedBoardItemId = "";
 
 const savedCheckIn = loadCheckInState();
 let currentMood = savedCheckIn.mood;
@@ -416,6 +433,65 @@ applyKitchenScene(loadKitchenScene());
 startCareLightTimer();
 resizeInput();
 input.focus();
+
+boardToggle.addEventListener("click", async () => {
+  boardDialog.showModal();
+  boardTaskInput.focus();
+  await loadBoard();
+});
+
+boardDialog.addEventListener("click", (event) => {
+  if (event.target === boardDialog) boardDialog.close();
+});
+
+boardForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const title = boardTaskInput.value.trim();
+  if (!title) return;
+  await createBoardItem(title, boardOwnerInput.value);
+});
+
+sharedBoard.addEventListener("click", async (event) => {
+  const editButton = event.target.closest("[data-board-edit]");
+  const deleteButton = event.target.closest("[data-board-delete]");
+  if (editButton) await editBoardItem(editButton.dataset.boardEdit);
+  if (deleteButton) await deleteBoardItem(deleteButton.dataset.boardDelete);
+});
+
+sharedBoard.addEventListener("change", async (event) => {
+  const select = event.target.closest("[data-board-move]");
+  if (select) await updateBoardItem(select.dataset.boardMove, { column: select.value });
+});
+
+sharedBoard.addEventListener("dragstart", (event) => {
+  const card = event.target.closest("[data-board-card]");
+  if (!card) return;
+  draggedBoardItemId = card.dataset.boardCard;
+  card.classList.add("dragging");
+  event.dataTransfer.effectAllowed = "move";
+});
+
+sharedBoard.addEventListener("dragend", (event) => {
+  event.target.closest("[data-board-card]")?.classList.remove("dragging");
+  sharedBoard.querySelectorAll(".board-column").forEach((column) => column.classList.remove("drag-over"));
+  draggedBoardItemId = "";
+});
+
+sharedBoard.addEventListener("dragover", (event) => {
+  const column = event.target.closest("[data-board-column]");
+  if (!column) return;
+  event.preventDefault();
+  sharedBoard.querySelectorAll(".board-column").forEach((item) => item.classList.toggle("drag-over", item === column));
+});
+
+sharedBoard.addEventListener("drop", async (event) => {
+  const column = event.target.closest("[data-board-column]");
+  if (!column || !draggedBoardItemId) return;
+  event.preventDefault();
+  await updateBoardItem(draggedBoardItemId, { column: column.dataset.boardColumn });
+});
+
+loadBoard();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -615,6 +691,139 @@ async function sendChatMessage(text) {
   } finally {
     setLoading(false);
   }
+}
+
+async function loadBoard() {
+  setBoardStatus("loading our board...");
+
+  try {
+    const response = await fetch("/api/board");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Could not load the board.");
+    boardItems = Array.isArray(data.items) ? data.items : [];
+    renderBoard();
+    setBoardStatus(boardItems.length ? "Board is up to date." : "The board is ready for its first card.");
+  } catch (error) {
+    setBoardStatus(error.message, true);
+  }
+}
+
+async function createBoardItem(title, owner) {
+  boardAddButton.disabled = true;
+  setBoardStatus("adding card...");
+
+  try {
+    const response = await fetch("/api/board", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ title, owner, column: "radar" })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Could not add that card.");
+    boardItems = data.items;
+    boardTaskInput.value = "";
+    renderBoard();
+    setBoardStatus("Card added to the radar.");
+    boardTaskInput.focus();
+  } catch (error) {
+    setBoardStatus(error.message, true);
+  } finally {
+    boardAddButton.disabled = false;
+  }
+}
+
+async function editBoardItem(id) {
+  const item = boardItems.find((candidate) => candidate.id === id);
+  if (!item) return;
+  const title = window.prompt("Edit this card", item.title);
+  if (title === null || !title.trim() || title.trim() === item.title) return;
+  await updateBoardItem(id, { title: title.trim() });
+}
+
+async function updateBoardItem(id, changes) {
+  const previousItems = boardItems.map((item) => ({ ...item }));
+  boardItems = boardItems.map((item) => item.id === id ? { ...item, ...changes } : item);
+  renderBoard();
+  setBoardStatus("saving change...");
+
+  try {
+    const response = await fetch(`/api/board?id=${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(changes)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Could not save that change.");
+    boardItems = data.items;
+    renderBoard();
+    setBoardStatus("Saved for both of you.");
+  } catch (error) {
+    boardItems = previousItems;
+    renderBoard();
+    setBoardStatus(error.message, true);
+  }
+}
+
+async function deleteBoardItem(id) {
+  const item = boardItems.find((candidate) => candidate.id === id);
+  if (!item || !window.confirm(`Remove “${item.title}” from the board?`)) return;
+
+  try {
+    const response = await fetch(`/api/board?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Could not remove that card.");
+    boardItems = data.items;
+    renderBoard();
+    setBoardStatus("Card removed.");
+  } catch (error) {
+    setBoardStatus(error.message, true);
+  }
+}
+
+function renderBoard() {
+  headerBoardCount.textContent = `${boardItems.filter((item) => item.column !== "done").length} open`;
+  sharedBoard.innerHTML = BOARD_COLUMNS.map((column) => {
+    const items = boardItems.filter((item) => item.column === column.id);
+    return `
+      <section class="board-column" data-board-column="${column.id}">
+        <header><div><span class="column-paw" aria-hidden="true">🐾</span><h3>${column.title}</h3></div><strong>${items.length}</strong></header>
+        <p>${column.note}</p>
+        <div class="board-card-list">
+          ${items.length ? items.map(renderBoardCard).join("") : '<div class="board-empty">drop a card here <span aria-hidden="true">🐾</span></div>'}
+        </div>
+      </section>`;
+  }).join("");
+}
+
+function renderBoardCard(item) {
+  return `
+    <article class="board-card" draggable="true" data-board-card="${escapeBoardText(item.id)}">
+      <p>${escapeBoardText(item.title)}</p>
+      <div class="board-card-meta"><span>added by ${escapeBoardText(item.owner)}</span><span>${formatBoardDate(item.updatedAt)}</span></div>
+      <div class="board-card-actions">
+        <select data-board-move="${escapeBoardText(item.id)}" aria-label="Move ${escapeBoardText(item.title)}">
+          ${BOARD_COLUMNS.map((column) => `<option value="${column.id}"${column.id === item.column ? " selected" : ""}>${column.title}</option>`).join("")}
+        </select>
+        <button type="button" data-board-edit="${escapeBoardText(item.id)}">edit</button>
+        <button type="button" data-board-delete="${escapeBoardText(item.id)}" aria-label="Delete ${escapeBoardText(item.title)}">×</button>
+      </div>
+    </article>`;
+}
+
+function escapeBoardText(value) {
+  return String(value || "").replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+  })[character]);
+}
+
+function formatBoardDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "just now" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function setBoardStatus(message, isError = false) {
+  boardStatus.textContent = message;
+  boardStatus.classList.toggle("error", isError);
 }
 
 function addMessage(role, content) {

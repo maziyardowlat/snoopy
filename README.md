@@ -23,6 +23,8 @@ The `text Maz` button opens a draft text using `MAZI_PHONE_NUMBER` from the envi
 ```bash
 ANTHROPIC_API_KEY=your_key_here
 MAZI_PHONE_NUMBER=+15551234567
+KV_REST_API_URL=https://your-redis-rest-endpoint
+KV_REST_API_TOKEN=your-redis-rest-token
 ```
 
 3. Run it with the Vercel CLI:
@@ -38,7 +40,8 @@ Then open the local URL Vercel prints.
 1. Push this folder to GitHub.
 2. Import the repo in Vercel.
 3. Add `ANTHROPIC_API_KEY` and `MAZI_PHONE_NUMBER` in the Vercel project environment variables.
-4. Deploy.
+4. Add a Redis integration from the Vercel Marketplace and map its REST URL/token to `KV_REST_API_URL` and `KV_REST_API_TOKEN`. This stores the shared board for both people. Local development uses `.data/shared-board.json` automatically.
+5. Deploy.
 
 CLI version:
 
