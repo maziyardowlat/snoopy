@@ -203,6 +203,10 @@
             <h2 id="boardTitle">the paw print board</h2>
             <p>Visibility, not pressure. Move a card when the kind of support changes.</p>
           </div>
+          <div class="board-mascot" aria-hidden="true">
+            <span>board inspector</span>
+            <img src="/assets/dog-buddy.png" alt="" />
+          </div>
           <form method="dialog">
             <button class="board-close" type="submit" aria-label="Close shared board">×</button>
           </form>
@@ -214,17 +218,19 @@
           <label class="visually-hidden" for="boardExplanationInput">Explanation</label>
           <textarea id="boardExplanationInput" maxlength="1200" rows="2" placeholder="Why is this worth doing? Add any context..."></textarea>
           <label class="board-date-field" for="boardDateInput"><span>finish by (optional)</span><input id="boardDateInput" type="date" /></label>
-          <label class="visually-hidden" for="boardOwnerInput">Who added it?</label>
-          <select id="boardOwnerInput" aria-label="Who is adding this?">
-            <option value="Waliya">Waliya</option>
-            <option value="Maz">Maz</option>
-          </select>
-          <label class="visually-hidden" for="boardForInput">Who is this for?</label>
-          <select id="boardForInput" aria-label="Who is this for?">
-            <option value="Waliya">for Waliya</option>
-            <option value="Maz">for Maz</option>
-            <option value="Both">for both</option>
-          </select>
+          <label class="board-person-field" for="boardOwnerInput"><span>added by</span>
+            <select id="boardOwnerInput">
+              <option value="Waliya">Waliya</option>
+              <option value="Maz">Maz</option>
+            </select>
+          </label>
+          <label class="board-person-field" for="boardForInput"><span>written for</span>
+            <select id="boardForInput">
+              <option value="Waliya">Waliya</option>
+              <option value="Maz">Maz</option>
+              <option value="Both">Both</option>
+            </select>
+          </label>
           <button id="boardAddButton" type="submit">add card</button>
         </form>
 

@@ -419,6 +419,7 @@ let currentWinQuestion = null;
 let boardItems = [];
 let draggedBoardItemId = "";
 let showingBoardArchive = false;
+let boardPageScrollY = 0;
 
 const savedCheckIn = loadCheckInState();
 let currentMood = savedCheckIn.mood;
@@ -444,6 +445,9 @@ resizeInput();
 input.focus();
 
 boardToggle.addEventListener("click", async () => {
+  boardPageScrollY = window.scrollY;
+  document.body.style.top = `-${boardPageScrollY}px`;
+  document.body.classList.add("board-modal-open");
   boardDialog.showModal();
   boardTaskInput.focus();
   await loadBoard();
@@ -451,6 +455,12 @@ boardToggle.addEventListener("click", async () => {
 
 boardDialog.addEventListener("click", (event) => {
   if (event.target === boardDialog) boardDialog.close();
+});
+
+boardDialog.addEventListener("close", () => {
+  document.body.classList.remove("board-modal-open");
+  document.body.style.top = "";
+  window.scrollTo(0, boardPageScrollY);
 });
 
 boardForm.addEventListener("submit", async (event) => {
@@ -831,7 +841,7 @@ function renderBoard() {
   sharedBoard.innerHTML = BOARD_COLUMNS.map((column) => {
     const items = visibleItems.filter((item) => item.column === column.id);
     return `
-      <section class="board-column" data-board-column="${column.id}">
+      <section class="board-column board-column-${column.id}" data-board-column="${column.id}">
         <header><div><span class="column-paw" aria-hidden="true">🐾</span><h3>${column.title}</h3></div><strong>${items.length}</strong></header>
         <p>${column.note}</p>
         <div class="board-card-list">
