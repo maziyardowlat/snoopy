@@ -87,9 +87,9 @@ async function writeBoard(items) {
 }
 
 async function redisCommand(command) {
-  const response = await fetch(process.env.KV_REST_API_URL, {
+  const response = await fetch(getRedisUrl(), {
     method: "POST",
-    headers: { authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`, "content-type": "application/json" },
+    headers: { authorization: `Bearer ${getRedisToken()}`, "content-type": "application/json" },
     body: JSON.stringify(command)
   });
   const data = await response.json().catch(() => ({}));
@@ -98,7 +98,15 @@ async function redisCommand(command) {
 }
 
 function hasRedis() {
-  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  return Boolean(getRedisUrl() && getRedisToken());
+}
+
+function getRedisUrl() {
+  return process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+}
+
+function getRedisToken() {
+  return process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 }
 
 function normalizeBoard(value) {
