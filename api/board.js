@@ -32,6 +32,7 @@ module.exports = async function handler(request, response) {
         dueDate: cleanDate(body.dueDate),
         owner: OWNERS.has(body.owner) ? body.owner : "Waliya",
         forPerson: RECIPIENTS.has(body.forPerson) ? body.forPerson : "Both",
+        archived: false,
         column: COLUMNS.has(body.column) ? body.column : "radar",
         createdAt: now,
         updatedAt: now
@@ -48,10 +49,11 @@ module.exports = async function handler(request, response) {
         const explanation = body.explanation === undefined ? (item.explanation || "") : cleanMultiline(body.explanation, 1200);
         const dueDate = body.dueDate === undefined ? (item.dueDate || "") : cleanDate(body.dueDate);
         const forPerson = body.forPerson === undefined ? (item.forPerson || "Both") : body.forPerson;
+        const archived = body.archived === undefined ? Boolean(item.archived) : Boolean(body.archived);
         if (!title) throw new Error("A card cannot be empty.");
         if (!COLUMNS.has(column)) throw new Error("That board column does not exist.");
         if (!RECIPIENTS.has(forPerson)) throw new Error("Choose who this card is for.");
-        return { ...item, title, explanation, dueDate, forPerson, column, updatedAt: new Date().toISOString() };
+        return { ...item, title, explanation, dueDate, forPerson, archived, column, updatedAt: new Date().toISOString() };
       });
     }
 

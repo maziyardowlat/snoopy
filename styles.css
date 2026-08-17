@@ -125,6 +125,8 @@ select {
 .board-filters label { display: grid; gap: 3px; color: var(--muted); font-size: .63rem; font-weight: 800; }
 .board-filters select, .board-filters button { min-height: 34px; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: #faf6f0; color: var(--ink); font-size: .72rem; }
 .board-filters button { font-weight: 800; }
+.board-filters button[aria-pressed="true"] { border-color: var(--home-deep); background: var(--home-deep); color: white; }
+.board-filters button span { display: inline-grid; place-items: center; min-width: 19px; height: 19px; margin-left: 3px; border-radius: 999px; background: rgba(255,255,255,.65); color: var(--home-deep); font-size: .62rem; }
 .board-status { min-height: 22px; margin: 8px 2px; color: var(--home-deep); font-size: .78rem; font-weight: 750; }
 .board-status.error { color: var(--brick-deep); }
 
@@ -150,7 +152,8 @@ select {
 .calendar-link { display: block; margin-top: 7px; padding: 7px 9px; border-radius: 7px; background: #edf2e9; color: var(--home-deep); font-size: .7rem; font-weight: 850; text-align: center; text-decoration: none; }
 .calendar-link:hover, .calendar-link:focus-visible { background: #dfe9d9; }
 .board-card-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 8px; margin-top: 9px; color: var(--muted); font-size: .64rem; }
-.board-card-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 5px; margin-top: 9px; }
+.board-card-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin-top: 9px; }
+.board-card-actions select { grid-column: 1 / -1; }
 .board-card-actions select, .board-card-actions button { min-width: 0; height: 30px; padding: 0 7px; border: 1px solid var(--line); border-radius: 7px; background: #faf6f0; color: var(--ink); font-size: .68rem; }
 .board-card-actions button { font-weight: 800; }
 .board-empty { display: grid; place-items: center; min-height: 88px; border: 1px dashed #d8c8b7; border-radius: 10px; color: #9a8e80; font-size: .75rem; text-align: center; }

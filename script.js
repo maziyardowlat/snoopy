@@ -45,6 +45,8 @@ const boardForInput = document.querySelector("#boardForInput");
 const boardOwnerFilter = document.querySelector("#boardOwnerFilter");
 const boardForFilter = document.querySelector("#boardForFilter");
 const boardClearFilters = document.querySelector("#boardClearFilters");
+const boardArchiveToggle = document.querySelector("#boardArchiveToggle");
+const boardArchiveCount = document.querySelector("#boardArchiveCount");
 const boardAddButton = document.querySelector("#boardAddButton");
 const sharedBoard = document.querySelector("#sharedBoard");
 const boardStatus = document.querySelector("#boardStatus");
@@ -416,6 +418,7 @@ let winsState = loadWinsState();
 let currentWinQuestion = null;
 let boardItems = [];
 let draggedBoardItemId = "";
+let showingBoardArchive = false;
 
 const savedCheckIn = loadCheckInState();
 let currentMood = savedCheckIn.mood;
@@ -464,12 +467,19 @@ boardClearFilters.addEventListener("click", () => {
   boardForFilter.value = "all";
   renderBoard();
 });
+boardArchiveToggle.addEventListener("click", () => {
+  showingBoardArchive = !showingBoardArchive;
+  boardArchiveToggle.setAttribute("aria-pressed", String(showingBoardArchive));
+  renderBoard();
+});
 
 sharedBoard.addEventListener("click", async (event) => {
   const editButton = event.target.closest("[data-board-edit]");
   const deleteButton = event.target.closest("[data-board-delete]");
+  const archiveButton = event.target.closest("[data-board-archive]");
   if (editButton) await editBoardItem(editButton.dataset.boardEdit);
   if (deleteButton) await deleteBoardItem(deleteButton.dataset.boardDelete);
+  if (archiveButton) await updateBoardItem(archiveButton.dataset.boardArchive, { archived: archiveButton.dataset.archiveAction === "archive" });
 });
 
 sharedBoard.addEventListener("change", async (event) => {
@@ -807,8 +817,12 @@ async function deleteBoardItem(id) {
 }
 
 function renderBoard() {
-  headerBoardCount.textContent = `${boardItems.filter((item) => item.column !== "done").length} open`;
+  const archivedCount = boardItems.filter((item) => item.archived).length;
+  headerBoardCount.textContent = `${boardItems.filter((item) => !item.archived && item.column !== "done").length} open`;
+  boardArchiveCount.textContent = archivedCount;
+  boardArchiveToggle.firstChild.textContent = showingBoardArchive ? "back to board " : "view archive ";
   const visibleItems = boardItems.filter((item) => {
+    if (Boolean(item.archived) !== showingBoardArchive) return false;
     const matchesOwner = boardOwnerFilter.value === "all" || item.owner === boardOwnerFilter.value;
     const cardFor = item.forPerson || "Both";
     const matchesFor = boardForFilter.value === "all" || cardFor === boardForFilter.value || (cardFor === "Both" && boardForFilter.value !== "Both");
@@ -855,6 +869,7 @@ function renderBoardCard(item) {
           ${BOARD_COLUMNS.map((column) => `<option value="${column.id}"${column.id === item.column ? " selected" : ""}>${column.title}</option>`).join("")}
         </select>
         <button type="button" data-board-edit="${escapeBoardText(item.id)}">edit</button>
+        <button type="button" data-board-archive="${escapeBoardText(item.id)}" data-archive-action="${item.archived ? "unarchive" : "archive"}">${item.archived ? "unarchive" : "archive"}</button>
         <button type="button" data-board-delete="${escapeBoardText(item.id)}" aria-label="Delete ${escapeBoardText(item.title)}">×</button>
       </div>
     </article>`;
