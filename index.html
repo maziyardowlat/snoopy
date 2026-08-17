@@ -211,6 +211,9 @@
         <form class="board-composer" id="boardForm">
           <label class="visually-hidden" for="boardTaskInput">Add something to the shared board</label>
           <input id="boardTaskInput" maxlength="180" placeholder="Add something to our radar..." autocomplete="off" required />
+          <label class="visually-hidden" for="boardExplanationInput">Explanation</label>
+          <textarea id="boardExplanationInput" maxlength="1200" rows="2" placeholder="Why is this worth doing? Add any context..."></textarea>
+          <label class="board-date-field" for="boardDateInput"><span>finish by (optional)</span><input id="boardDateInput" type="date" /></label>
           <label class="visually-hidden" for="boardOwnerInput">Who added it?</label>
           <select id="boardOwnerInput" aria-label="Who is adding this?">
             <option value="Waliya">Waliya</option>

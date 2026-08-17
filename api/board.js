@@ -27,6 +27,8 @@ module.exports = async function handler(request, response) {
       nextItems = [{
         id: crypto.randomUUID(),
         title,
+        explanation: cleanMultiline(body.explanation, 1200),
+        dueDate: cleanDate(body.dueDate),
         owner: OWNERS.has(body.owner) ? body.owner : "Waliya",
         column: COLUMNS.has(body.column) ? body.column : "radar",
         createdAt: now,
@@ -41,9 +43,11 @@ module.exports = async function handler(request, response) {
         if (item.id !== id) return item;
         const title = body.title === undefined ? item.title : cleanText(body.title, 180);
         const column = body.column === undefined ? item.column : body.column;
+        const explanation = body.explanation === undefined ? (item.explanation || "") : cleanMultiline(body.explanation, 1200);
+        const dueDate = body.dueDate === undefined ? (item.dueDate || "") : cleanDate(body.dueDate);
         if (!title) throw new Error("A card cannot be empty.");
         if (!COLUMNS.has(column)) throw new Error("That board column does not exist.");
-        return { ...item, title, column, updatedAt: new Date().toISOString() };
+        return { ...item, title, explanation, dueDate, column, updatedAt: new Date().toISOString() };
       });
     }
 
@@ -120,6 +124,15 @@ function getId(request) {
 
 function cleanText(value, maxLength) {
   return typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, maxLength) : "";
+}
+
+function cleanMultiline(value, maxLength) {
+  return typeof value === "string" ? value.replace(/\r\n?/g, "\n").trim().slice(0, maxLength) : "";
+}
+
+function cleanDate(value) {
+  if (value === "" || value === undefined || value === null) return "";
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) ? value : "";
 }
 
 async function readJson(request) {

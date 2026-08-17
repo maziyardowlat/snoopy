@@ -38,6 +38,8 @@ const boardToggle = document.querySelector("#boardToggle");
 const boardDialog = document.querySelector("#boardDialog");
 const boardForm = document.querySelector("#boardForm");
 const boardTaskInput = document.querySelector("#boardTaskInput");
+const boardExplanationInput = document.querySelector("#boardExplanationInput");
+const boardDateInput = document.querySelector("#boardDateInput");
 const boardOwnerInput = document.querySelector("#boardOwnerInput");
 const boardAddButton = document.querySelector("#boardAddButton");
 const sharedBoard = document.querySelector("#sharedBoard");
@@ -448,7 +450,7 @@ boardForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const title = boardTaskInput.value.trim();
   if (!title) return;
-  await createBoardItem(title, boardOwnerInput.value);
+  await createBoardItem(title, boardExplanationInput.value.trim(), boardDateInput.value, boardOwnerInput.value);
 });
 
 sharedBoard.addEventListener("click", async (event) => {
@@ -460,10 +462,18 @@ sharedBoard.addEventListener("click", async (event) => {
 
 sharedBoard.addEventListener("change", async (event) => {
   const select = event.target.closest("[data-board-move]");
+  const explanation = event.target.closest("[data-board-explanation]");
+  const dueDate = event.target.closest("[data-board-date]");
   if (select) await updateBoardItem(select.dataset.boardMove, { column: select.value });
+  if (explanation) await updateBoardItem(explanation.dataset.boardExplanation, { explanation: explanation.value.trim() });
+  if (dueDate) await updateBoardItem(dueDate.dataset.boardDate, { dueDate: dueDate.value });
 });
 
 sharedBoard.addEventListener("dragstart", (event) => {
+  if (event.target.closest("input, textarea, select, button, a")) {
+    event.preventDefault();
+    return;
+  }
   const card = event.target.closest("[data-board-card]");
   if (!card) return;
   draggedBoardItemId = card.dataset.boardCard;
@@ -708,7 +718,7 @@ async function loadBoard() {
   }
 }
 
-async function createBoardItem(title, owner) {
+async function createBoardItem(title, explanation, dueDate, owner) {
   boardAddButton.disabled = true;
   setBoardStatus("adding card...");
 
@@ -716,12 +726,14 @@ async function createBoardItem(title, owner) {
     const response = await fetch("/api/board", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ title, owner, column: "radar" })
+      body: JSON.stringify({ title, explanation, dueDate, owner, column: "radar" })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Could not add that card.");
     boardItems = data.items;
     boardTaskInput.value = "";
+    boardExplanationInput.value = "";
+    boardDateInput.value = "";
     renderBoard();
     setBoardStatus("Card added to the radar.");
     boardTaskInput.focus();
@@ -796,9 +808,21 @@ function renderBoard() {
 }
 
 function renderBoardCard(item) {
+  const calendarUrl = item.dueDate
+    ? `/api/calendar?title=${encodeURIComponent(item.title)}&description=${encodeURIComponent(item.explanation || "")}&date=${encodeURIComponent(item.dueDate)}`
+    : "";
   return `
     <article class="board-card" draggable="true" data-board-card="${escapeBoardText(item.id)}">
       <p>${escapeBoardText(item.title)}</p>
+      <label class="card-explanation">
+        <span>explanation</span>
+        <textarea data-board-explanation="${escapeBoardText(item.id)}" maxlength="1200" rows="3" placeholder="Add why this matters or any helpful context...">${escapeBoardText(item.explanation || "")}</textarea>
+      </label>
+      <label class="card-date">
+        <span>finish by</span>
+        <input data-board-date="${escapeBoardText(item.id)}" type="date" value="${escapeBoardText(item.dueDate || "")}" />
+      </label>
+      ${calendarUrl ? `<a class="calendar-link" href="${escapeBoardText(calendarUrl)}">add to calendar</a>` : ""}
       <div class="board-card-meta"><span>added by ${escapeBoardText(item.owner)}</span><span>${formatBoardDate(item.updatedAt)}</span></div>
       <div class="board-card-actions">
         <select data-board-move="${escapeBoardText(item.id)}" aria-label="Move ${escapeBoardText(item.title)}">
